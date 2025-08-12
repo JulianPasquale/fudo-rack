@@ -1,0 +1,10 @@
+{
+  "name": "Fudo Rack App",
+  "build": {
+    "dockerfile": "../Dockerfile"
+  },
+  "features": {},
+  "customizations": {},
+  "postCreateCommand": "bundle install",
+  "remoteUser": "root"
+}

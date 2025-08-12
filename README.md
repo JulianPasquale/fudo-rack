@@ -1,2 +1,3 @@
-# fudo-rake
-Rake app to solve Fudo's challenge
+# fudo-rack
+
+Rack app to solve Fudo's challenge
