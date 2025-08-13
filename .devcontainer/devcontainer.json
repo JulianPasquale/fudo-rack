@@ -6,5 +6,6 @@
   "features": {},
   "customizations": {},
   "postCreateCommand": "bundle install",
-  "remoteUser": "root"
+  "remoteUser": "root",
+  "forwardPorts": [3000]
 }
