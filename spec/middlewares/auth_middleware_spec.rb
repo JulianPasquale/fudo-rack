@@ -1,54 +1,42 @@
 # frozen_string_literal: true
 
 RSpec.describe AuthMiddleware do
-  let(:app) { double('app') }
-  let(:middleware) { AuthMiddleware.new(app) }
-  let(:env) { {} }
+  let(:env) { Rack::MockRequest.env_for }
+  let(:app) { ->(_env) { [200, {}, ['success']] } }
+
+  subject { AuthMiddleware.new(app) }
 
   describe '#call' do
-    context 'with valid Bearer token' do
+    context 'when token is valid' do
       let(:valid_token) { 'token_admin_1234567890' }
       let(:env) { { 'HTTP_AUTHORIZATION' => "Bearer #{valid_token}" } }
 
-      before do
-        allow(app).to receive(:call).and_return([200, {}, ['success']])
-      end
-
-      it 'calls the next app' do
-        expect(app).to receive(:call).with(env)
-        middleware.call(env)
-      end
-
-      it 'sets current_user in env' do
-        middleware.call(env)
+      it 'sets the current_user and calls the next app' do
+        response = subject.call(env)
         expect(env['current_user']).to eq('admin')
-      end
-
-      it 'returns the app response' do
-        response = middleware.call(env)
         expect(response).to eq([200, {}, ['success']])
       end
     end
 
-    context 'with invalid Bearer token' do
+    context 'with token is invalid' do
       context 'when token does not start with token_' do
         let(:invalid_token) { 'invalid_token_format' }
         let(:env) { { 'HTTP_AUTHORIZATION' => "Bearer #{invalid_token}" } }
 
         it 'returns 401 unauthorized' do
-          response = middleware.call(env)
+          response = subject.call(env)
           expect(response[0]).to eq(401)
         end
 
         it 'returns unauthorized error message' do
-          response = middleware.call(env)
+          response = subject.call(env)
           body = JSON.parse(response[2].first)
           expect(body['error']).to eq('Unauthorized')
         end
 
         it 'does not call the next app' do
           expect(app).not_to receive(:call)
-          middleware.call(env)
+          subject.call(env)
         end
       end
 
@@ -57,7 +45,7 @@ RSpec.describe AuthMiddleware do
         let(:env) { { 'HTTP_AUTHORIZATION' => "Bearer #{invalid_token}" } }
 
         it 'returns 401 unauthorized' do
-          response = middleware.call(env)
+          response = subject.call(env)
           expect(response[0]).to eq(401)
         end
       end
@@ -67,19 +55,19 @@ RSpec.describe AuthMiddleware do
       let(:env) { {} }
 
       it 'returns 401 unauthorized' do
-        response = middleware.call(env)
+        response = subject.call(env)
         expect(response[0]).to eq(401)
       end
 
       it 'returns unauthorized error message' do
-        response = middleware.call(env)
+        response = subject.call(env)
         body = JSON.parse(response[2].first)
         expect(body['error']).to eq('Unauthorized')
       end
 
       it 'does not call the next app' do
         expect(app).not_to receive(:call)
-        middleware.call(env)
+        subject.call(env)
       end
     end
 
@@ -87,13 +75,13 @@ RSpec.describe AuthMiddleware do
       let(:env) { { 'HTTP_AUTHORIZATION' => 'Basic dXNlcjpwYXNz' } }
 
       it 'returns 401 unauthorized' do
-        response = middleware.call(env)
+        response = subject.call(env)
         expect(response[0]).to eq(401)
       end
 
       it 'does not call the next app' do
         expect(app).not_to receive(:call)
-        middleware.call(env)
+        subject.call(env)
       end
     end
 
@@ -101,7 +89,7 @@ RSpec.describe AuthMiddleware do
       let(:env) { { 'HTTP_AUTHORIZATION' => 'Bearer ' } }
 
       it 'returns 401 unauthorized' do
-        response = middleware.call(env)
+        response = subject.call(env)
         expect(response[0]).to eq(401)
       end
     end
@@ -154,7 +142,7 @@ RSpec.describe AuthMiddleware do
     let(:env) { {} }
 
     it 'returns proper HTTP response array' do
-      response = middleware.call(env)
+      response = subject.call(env)
 
       expect(response).to be_an(Array)
       expect(response.length).to eq(3)
@@ -164,7 +152,7 @@ RSpec.describe AuthMiddleware do
     end
 
     it 'returns JSON content type' do
-      response = middleware.call(env)
+      response = subject.call(env)
       expect(response[1]['Content-Type']).to eq('application/json')
     end
   end

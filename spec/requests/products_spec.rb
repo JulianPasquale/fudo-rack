@@ -6,7 +6,7 @@ RSpec.describe ProductsController do
   describe '#call' do
     context 'when request is a POST verb' do
       context 'when product name is provided' do
-        it 'returns a 202 status' do
+        it 'returns an accepted status' do
           post '/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
@@ -123,14 +123,14 @@ RSpec.describe ProductsController do
     end
 
     context 'with unsupported HTTP method' do
-      it 'returns 405 for PUT request' do
+      it 'returns method not allowed for PUT request' do
         put '/products', {}, {
           'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
         }
         expect(last_response.status).to eq(405)
       end
 
-      it 'returns 405 for DELETE request' do
+      it 'returns method not allowed for DELETE request' do
         delete '/products', {}, {
           'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
         }
@@ -148,14 +148,14 @@ RSpec.describe ProductsController do
     end
 
     context 'without authorization' do
-      it 'returns 401 for POST request' do
+      it 'returns unauthorized for POST request' do
         post '/products', { name: 'Test' }.to_json, {
           'CONTENT_TYPE' => 'application/json'
         }
         expect(last_response.status).to eq(401)
       end
 
-      it 'returns 401 for GET request' do
+      it 'returns unauthorized for GET request' do
         get '/products'
         expect(last_response.status).to eq(401)
       end
