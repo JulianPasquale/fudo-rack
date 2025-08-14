@@ -5,7 +5,7 @@ require 'securerandom'
 class Product
   attr_reader :id, :name, :created_at
 
-  def initialize(name, id: nil)
+  def initialize(name:, id: nil)
     @id = id || SecureRandom.uuid
     @name = name
     @created_at = Time.now

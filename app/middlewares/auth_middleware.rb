@@ -27,7 +27,7 @@ class AuthMiddleware
   private
 
   def valid_token?(token)
-    token.start_with?('token_') && token.split('_').length >= 3
+    token&.start_with?('token_') && token.split('_').length >= 3
   end
 
   def extract_user_from_token(token)

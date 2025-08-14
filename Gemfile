@@ -9,6 +9,11 @@ gem 'json', '~> 2.8'
 gem 'puma', '~> 6.6'
 gem 'rack', '~> 3.2'
 
+group :development, :test do
+  gem 'rspec', '~> 3.13'
+  gem 'rack-test', '~> 2.1'
+end
+
 group :development do
   gem 'listen', '~> 3.9'
   gem 'rerun', '~> 0.14'

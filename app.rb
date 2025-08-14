@@ -28,6 +28,12 @@ class App
       map '/AUTHORS' do
         run StaticFileServer.new('AUTHORS', 'text/plain', 'max-age=86400')
       end
+      
+      map '/' do
+        run lambda { |env|
+          [200, { 'Content-Type' => 'application/json' }, ['{"message": "Fudo API", "version": "1.0.0"}']]
+        }
+      end
     end
   end
 end
