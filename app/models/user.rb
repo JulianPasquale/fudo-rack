@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'securerandom'
+
 class User
   attr_reader :id, :username, :created_at
 

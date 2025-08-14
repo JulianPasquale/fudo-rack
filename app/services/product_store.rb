@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+require 'singleton'
 require_relative '../models/product'
 
 class ProductStore
+  include Singleton
+  
   def initialize
     @products = {}
     @pending_products = {}
@@ -37,5 +40,10 @@ class ProductStore
     else
       nil
     end
+  end
+
+  def reset!
+    @products.clear
+    @pending_products.clear
   end
 end

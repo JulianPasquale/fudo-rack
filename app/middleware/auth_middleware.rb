@@ -38,8 +38,8 @@ class AuthMiddleware
   def public_endpoint?(path, method)
     public_routes = [
       ['POST', '/api/auth'],
-      ['GET', '/openapi.yaml'],
-      ['GET', '/AUTHORS']
+      ['GET', '/openapi'],
+      ['GET', '/authors']
     ]
 
     public_routes.include?([method, path])

@@ -18,13 +18,13 @@ RSpec.describe 'AuthMiddleware' do
     end
 
     it 'allows access to AUTHORS file without token' do
-      get '/AUTHORS'
+      get '/authors'
       
       expect(last_response.status).to eq(200)
     end
 
     it 'allows access to OpenAPI specification without token' do
-      get '/openapi.yaml'
+      get '/openapi'
       
       expect(last_response.status).to eq(200)
     end

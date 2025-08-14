@@ -3,7 +3,7 @@
 require_relative 'application_controller'
 
 class StaticController < ApplicationController
-  def openapi(request)
+  def openapi
     content = File.read(File.join(__dir__, '..', '..', 'public', 'openapi.yaml'))
     [200, {
       'Content-Type' => 'application/yaml',
@@ -13,7 +13,7 @@ class StaticController < ApplicationController
     json_not_found('OpenAPI specification not found')
   end
 
-  def authors(request)
+  def authors
     content = File.read(File.join(__dir__, '..', '..', 'public', 'AUTHORS'))
     [200, {
       'Content-Type' => 'text/plain',

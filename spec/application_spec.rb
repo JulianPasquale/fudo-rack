@@ -4,9 +4,9 @@ require 'spec_helper'
 
 RSpec.describe 'Application' do
   describe 'Static file serving' do
-    describe 'GET /AUTHORS' do
+    describe 'GET /authors' do
       it 'returns AUTHORS file with correct content' do
-        get '/AUTHORS'
+        get '/authors'
         
         expect(last_response.status).to eq(200)
         expect(last_response.headers['Content-Type']).to eq('text/plain')
@@ -14,15 +14,15 @@ RSpec.describe 'Application' do
       end
 
       it 'sets correct cache headers for AUTHORS file' do
-        get '/AUTHORS'
+        get '/authors'
         
         expect(last_response.headers['Cache-Control']).to eq('public, max-age=86400')
       end
     end
 
-    describe 'GET /openapi.yaml' do
+    describe 'GET /openapi' do
       it 'returns OpenAPI specification' do
-        get '/openapi.yaml'
+        get '/openapi'
         
         expect(last_response.status).to eq(200)
         expect(last_response.headers['Content-Type']).to eq('application/yaml')
@@ -31,13 +31,13 @@ RSpec.describe 'Application' do
       end
 
       it 'sets no-cache headers for OpenAPI file' do
-        get '/openapi.yaml'
+        get '/openapi'
         
         expect(last_response.headers['Cache-Control']).to eq('no-cache, no-store, must-revalidate')
       end
 
       it 'contains all required API endpoints' do
-        get '/openapi.yaml'
+        get '/openapi'
         
         expect(last_response.body).to include('/api/auth')
         expect(last_response.body).to include('/api/products')
@@ -45,7 +45,7 @@ RSpec.describe 'Application' do
       end
 
       it 'defines authentication scheme' do
-        get '/openapi.yaml'
+        get '/openapi'
         
         expect(last_response.body).to include('bearerAuth')
         expect(last_response.body).to include('JWT')

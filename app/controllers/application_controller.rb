@@ -4,8 +4,6 @@ require 'json'
 require 'forwardable'
 
 class ApplicationController
-  extend Forwardable
-
   def initialize(request)
     @request = request
   end
@@ -14,8 +12,13 @@ class ApplicationController
 
   attr_reader :request
 
-  def_delegator :@request, :params
-
+  def params
+    @params ||= begin
+      url_params = @request.params || {}
+      body_params = parse_json_body(@request) || {}
+      url_params.merge(body_params)
+    end
+  end
 
   def json_response(data, status = 200)
     [status, { 'Content-Type' => 'application/json' }, [JSON.generate(data)]]
@@ -46,10 +49,20 @@ class ApplicationController
   end
 
   def parse_json_body(request)
+    return @parsed_body if defined?(@parsed_body)
+
+    return @parsed_body = {} unless request.body
+
     body = request.body.read
-    JSON.parse(body)
+    request.body.rewind # Reset for potential future reads
+
+    @parsed_body = if body && !body.empty?
+      JSON.parse(body)
+    else
+      {}
+    end
   rescue JSON::ParserError
-    nil
+    @parsed_body = nil
   end
 
   def current_user(env)

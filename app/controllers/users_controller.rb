@@ -3,7 +3,7 @@
 require_relative 'application_controller'
 
 class UsersController < ApplicationController
-  def profile(request)
+  def profile
     user = current_user(request.env)
 
     json_ok({ user: user.to_h })

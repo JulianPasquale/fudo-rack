@@ -5,7 +5,10 @@ require_relative '../services/auth_service'
 
 class AuthController < ApplicationController
   def login
-    return json_bad_request('Invalid JSON') unless params
+    # Check if JSON parsing failed for content-type application/json
+    if request.content_type == 'application/json' && parse_json_body(request).nil?
+      return json_bad_request('Invalid JSON')
+    end
 
     username = params['username']
     password = params['password']
