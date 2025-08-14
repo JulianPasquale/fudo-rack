@@ -12,4 +12,5 @@ gem 'rack', '~> 3.2'
 group :development do
   gem 'listen', '~> 3.9'
   gem 'rerun', '~> 0.14'
+  gem 'rubocop', '~> 1.79'
 end
