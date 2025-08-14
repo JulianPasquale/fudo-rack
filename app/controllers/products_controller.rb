@@ -9,10 +9,9 @@ class ProductsController < ApplicationController
   end
 
   def create(request)
-    body = parse_json_body(request)
-    return json_bad_request('Invalid JSON') unless body
+    return json_bad_request('Invalid JSON') unless params
 
-    name = body['name']
+    name = params['name']
     return json_bad_request('Name is required') unless name
 
     user = current_user(request.env)

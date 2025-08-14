@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 
 ruby '3.4.5'
 
+gem 'addressable', '~> 2.8'
 gem 'i18n', '~> 1.14'
 gem 'json', '~> 2.7'
 gem 'jwt', '~> 2.7'

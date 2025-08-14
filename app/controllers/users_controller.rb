@@ -6,8 +6,6 @@ class UsersController < ApplicationController
   def profile(request)
     user = current_user(request.env)
 
-    json_ok({
-      user: user.to_h
-    })
+    json_ok({ user: user.to_h })
   end
 end

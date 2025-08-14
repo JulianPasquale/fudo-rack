@@ -4,12 +4,11 @@ require_relative 'application_controller'
 require_relative '../services/auth_service'
 
 class AuthController < ApplicationController
-  def login(request)
-    body = parse_json_body(request)
-    return json_bad_request('Invalid JSON') unless body
+  def login
+    return json_bad_request('Invalid JSON') unless params
 
-    username = body['username']
-    password = body['password']
+    username = params['username']
+    password = params['password']
 
     return json_bad_request('Username and password are required') unless username && password
 

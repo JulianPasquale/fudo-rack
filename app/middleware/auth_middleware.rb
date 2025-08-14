@@ -10,8 +10,8 @@ class AuthMiddleware
   def call(env)
     request = Rack::Request.new(env)
 
-    # Skip authentication for public endpoints
-    return @app.call(env) if public_endpoint?(request.path, request.request_method)
+    # Skip authentication for public endpoints or non-API routes
+    return @app.call(env) if public_endpoint?(request.path, request.request_method) || !api_route?(request.path)
 
     # Check for authentication
     auth_header = env['HTTP_AUTHORIZATION']
@@ -43,6 +43,10 @@ class AuthMiddleware
     ]
 
     public_routes.include?([method, path])
+  end
+
+  def api_route?(path)
+    path.start_with?('/api/')
   end
 
   def unauthorized_response

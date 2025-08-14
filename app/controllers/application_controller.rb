@@ -1,9 +1,21 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'forwardable'
 
 class ApplicationController
+  extend Forwardable
+
+  def initialize(request)
+    @request = request
+  end
+
   protected
+
+  attr_reader :request
+
+  def_delegator :@request, :params
+
 
   def json_response(data, status = 200)
     [status, { 'Content-Type' => 'application/json' }, [JSON.generate(data)]]
@@ -42,5 +54,9 @@ class ApplicationController
 
   def current_user(env)
     env['current_user']
+  end
+
+  def route_params(env)
+    env['router.params'] || {}
   end
 end
