@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
-
 RSpec.describe AuthMiddleware do
   let(:app) { double('app') }
   let(:middleware) { AuthMiddleware.new(app) }
@@ -157,7 +155,7 @@ RSpec.describe AuthMiddleware do
 
     it 'returns proper HTTP response array' do
       response = middleware.call(env)
-      
+
       expect(response).to be_an(Array)
       expect(response.length).to eq(3)
       expect(response[0]).to be_a(Integer)  # status

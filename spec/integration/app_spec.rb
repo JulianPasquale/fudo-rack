@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
-
 RSpec.describe 'Fudo API Integration' do
   describe 'Authentication flow' do
     context 'successful authentication' do
@@ -11,7 +9,7 @@ RSpec.describe 'Fudo API Integration' do
         }
 
         expect(last_response.status).to eq(200)
-        
+
         response_body = JSON.parse(last_response.body)
         expect(response_body['token']).to be_a(String)
         expect(response_body['expires_in']).to eq(3600)
@@ -25,7 +23,7 @@ RSpec.describe 'Fudo API Integration' do
         }
 
         expect(last_response.status).to eq(401)
-        
+
         response_body = JSON.parse(last_response.body)
         expect(response_body['error']).to eq('Invalid credentials')
       end
@@ -45,7 +43,7 @@ RSpec.describe 'Fudo API Integration' do
       get '/products', {}, {
         'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
       }
-      
+
       expect(last_response.status).to eq(200)
       response_body = JSON.parse(last_response.body)
       expect(response_body['products']).to eq([])
@@ -55,7 +53,7 @@ RSpec.describe 'Fudo API Integration' do
         'CONTENT_TYPE' => 'application/json',
         'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
       }
-      
+
       expect(last_response.status).to eq(202)
       creation_response = JSON.parse(last_response.body)
       expect(creation_response['status']).to eq('pending')
@@ -66,21 +64,21 @@ RSpec.describe 'Fudo API Integration' do
       get '/products', {}, {
         'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
       }
-      
+
       response_body = JSON.parse(last_response.body)
       expect(response_body['products']).to eq([])
 
       # Step 4: Wait for async creation and verify product is available
       sleep(6) # Wait for the 5-second delay + buffer
-      
+
       get '/products', {}, {
         'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
       }
-      
+
       expect(last_response.status).to eq(200)
       response_body = JSON.parse(last_response.body)
       expect(response_body['products'].length).to eq(1)
-      
+
       product = response_body['products'].first
       expect(product['id']).to eq(product_id)
       expect(product['name']).to eq('Integration Test Product')
@@ -92,12 +90,12 @@ RSpec.describe 'Fudo API Integration' do
       post '/products', { name: 'Test Product' }.to_json, {
         'CONTENT_TYPE' => 'application/json'
       }
-      
+
       expect(last_response.status).to eq(401)
 
       # Attempt to get products without token
       get '/products'
-      
+
       expect(last_response.status).to eq(401)
     end
 
@@ -111,7 +109,7 @@ RSpec.describe 'Fudo API Integration' do
           'CONTENT_TYPE' => 'application/json',
           'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
         }
-        
+
         expect(last_response.status).to eq(202)
         response_body = JSON.parse(last_response.body)
         created_ids << response_body['id']
@@ -124,13 +122,13 @@ RSpec.describe 'Fudo API Integration' do
       get '/products', {}, {
         'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
       }
-      
+
       response_body = JSON.parse(last_response.body)
       expect(response_body['products'].length).to eq(3)
-      
+
       retrieved_names = response_body['products'].map { |p| p['name'] }
       expect(retrieved_names).to match_array(product_names)
-      
+
       retrieved_ids = response_body['products'].map { |p| p['id'] }
       expect(retrieved_ids).to match_array(created_ids)
     end
@@ -151,7 +149,7 @@ RSpec.describe 'Fudo API Integration' do
 
     it 'serves AUTHORS file with proper caching' do
       get '/AUTHORS'
-      
+
       expect(last_response.status).to eq(200)
       expect(last_response.body).to eq('Julian Pasquale')
       expect(last_response.headers['Content-Type']).to eq('text/plain')
@@ -160,7 +158,7 @@ RSpec.describe 'Fudo API Integration' do
 
     it 'serves openapi.yaml with no-cache headers' do
       get '/openapi.yaml'
-      
+
       expect(last_response.status).to eq(200)
       expect(last_response.body).to include('openapi: 3.0.0')
       expect(last_response.headers['Content-Type']).to eq('application/x-yaml')
@@ -171,10 +169,10 @@ RSpec.describe 'Fudo API Integration' do
   describe 'Root endpoint' do
     it 'returns API information' do
       get '/'
-      
+
       expect(last_response.status).to eq(200)
       expect(last_response.headers['Content-Type']).to eq('application/json')
-      
+
       response_body = JSON.parse(last_response.body)
       expect(response_body['message']).to eq('Fudo API')
       expect(response_body['version']).to eq('1.0.0')
@@ -194,7 +192,7 @@ RSpec.describe 'Fudo API Integration' do
         'CONTENT_TYPE' => 'application/json',
         'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
       }
-      
+
       expect(last_response.status).to eq(400)
       response_body = JSON.parse(last_response.body)
       expect(response_body['error']).to eq('Missing product name')
@@ -204,7 +202,7 @@ RSpec.describe 'Fudo API Integration' do
       patch '/products', {}, {
         'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
       }
-      
+
       expect(last_response.status).to eq(405)
     end
   end
@@ -214,10 +212,10 @@ RSpec.describe 'Fudo API Integration' do
       get '/', {}, {
         'HTTP_ACCEPT_ENCODING' => 'gzip, deflate'
       }
-      
+
       # Rack::Deflater should add compression
       expect(last_response.status).to eq(200)
-      # Note: In a real scenario, you might check for Content-Encoding header
+      # NOTE: In a real scenario, you might check for Content-Encoding header
     end
   end
 end

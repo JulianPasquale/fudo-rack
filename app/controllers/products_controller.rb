@@ -9,9 +9,9 @@ class ProductsController
 
     case request.request_method
     when 'POST'
-      create_product(request)
+      create(request)
     when 'GET'
-      get_products
+      index
     else
       method_not_allowed
     end
@@ -19,8 +19,12 @@ class ProductsController
 
   private
 
-  def create_product(request)
-    body = JSON.parse(request.body.read) rescue {}
+  def create(request)
+    body = begin
+      JSON.parse(request.body.read)
+    rescue StandardError
+      {}
+    end
     name = body['name']
 
     return bad_request('Missing product name') if name.nil? || name.empty?
@@ -35,8 +39,8 @@ class ProductsController
     json_response(202, response)
   end
 
-  def get_products
-    products = ProductStore.instance.get_products.map(&:to_h)
+  def index
+    products = ProductStore.instance.products.map(&:to_h)
     json_response(200, { products: products })
   end
 

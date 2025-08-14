@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
-
 RSpec.describe Product do
   describe '#initialize' do
     context 'with name only' do
@@ -54,7 +52,7 @@ RSpec.describe Product do
     it 'returns a JSON string' do
       json_string = product.to_json
       expect(json_string).to be_a(String)
-      
+
       parsed = JSON.parse(json_string)
       expect(parsed['name']).to eq('Test Product')
       expect(parsed['id']).to eq(product.id)

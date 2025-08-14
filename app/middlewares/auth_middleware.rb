@@ -10,9 +10,9 @@ class AuthMiddleware
   def call(env)
     request = Rack::Request.new(env)
     auth_header = request.get_header('HTTP_AUTHORIZATION')
-    
+
     if auth_header&.start_with?('Bearer ')
-      token = auth_header[7..-1]
+      token = auth_header[7..]
       if valid_token?(token)
         env['current_user'] = extract_user_from_token(token)
         @app.call(env)

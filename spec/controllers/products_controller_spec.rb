@@ -1,81 +1,63 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
-
 RSpec.describe ProductsController do
-  let(:controller) { ProductsController.new }
-  let(:store) { ProductStore.instance }
+  let(:params) { { name: 'Test Product' } }
 
   describe '#call' do
-    context 'with POST request' do
-      context 'with valid product data' do
-        let(:valid_params) { { name: 'Test Product' } }
-
-        it 'returns 202 status' do
-          post '/products', valid_params.to_json, {
+    context 'when request is a POST verb' do
+      context 'when product name is provided' do
+        it 'returns a 202 status' do
+          post '/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
           }
           expect(last_response.status).to eq(202)
-        end
-
-        it 'returns product creation response' do
-          post '/products', valid_params.to_json, {
-            'CONTENT_TYPE' => 'application/json',
-            'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
-          }
           response_body = JSON.parse(last_response.body)
-          
+
           expect(response_body['id']).to be_a(String)
           expect(response_body['message']).to eq('Product creation started. It will be available in 5 seconds.')
           expect(response_body['status']).to eq('pending')
         end
 
         it 'calls ProductStore to add product asynchronously' do
-          expect(store).to receive(:add_product_async).and_call_original
+          expect(ProductStore.instance).to receive(:add_product_async).and_return(SecureRandom.uuid)
 
-          post '/products', valid_params.to_json, {
+          post '/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
           }
         end
       end
 
-      context 'with missing product name' do
-        let(:invalid_params) { {} }
+      context 'when product name is not provided' do
+        let(:params) { {} }
 
-        it 'returns 400 status' do
-          post '/products', invalid_params.to_json, {
+        it 'returns bad_format status' do
+          post '/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
           }
           expect(last_response.status).to eq(400)
-        end
-
-        it 'returns error message' do
-          post '/products', invalid_params.to_json, {
-            'CONTENT_TYPE' => 'application/json',
-            'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
-          }
           response_body = JSON.parse(last_response.body)
-          
           expect(response_body['error']).to eq('Missing product name')
         end
       end
 
-      context 'with empty product name' do
-        let(:empty_name_params) { { name: '' } }
+      context 'when product name is empty' do
+        let(:params) { { name: '' } }
 
         it 'returns 400 status' do
-          post '/products', empty_name_params.to_json, {
+          post '/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
           }
           expect(last_response.status).to eq(400)
+          response_body = JSON.parse(last_response.body)
+          expect(response_body['error']).to eq('Missing product name')
         end
       end
 
-      context 'with invalid JSON' do
+      context 'when JSON is invalid' do
         it 'returns 400 status' do
           post '/products', 'invalid json', {
             'CONTENT_TYPE' => 'application/json',
@@ -86,16 +68,13 @@ RSpec.describe ProductsController do
       end
     end
 
-    context 'with GET request' do
-      context 'with existing products' do
-        let(:product1) { Product.new(name: 'Product 1') }
-        let(:product2) { Product.new(name: 'Product 2') }
+    context 'when request is a GET verb' do
+      context 'when store has products' do
+        let(:first_product) { Product.new(name: 'Product 1') }
+        let(:second_product) { Product.new(name: 'Product 2') }
 
         before do
-          # Add products directly to store for testing
-          products_hash = store.instance_variable_get(:@products)
-          products_hash[product1.id] = product1
-          products_hash[product2.id] = product2
+          allow(ProductStore.instance).to(receive(:products).and_return([first_product, second_product]))
         end
 
         it 'returns 200 status' do
@@ -110,10 +89,10 @@ RSpec.describe ProductsController do
             'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
           }
           response_body = JSON.parse(last_response.body)
-          
+
           expect(response_body['products']).to be_an(Array)
           expect(response_body['products'].length).to eq(2)
-          
+
           product_names = response_body['products'].map { |p| p['name'] }
           expect(product_names).to include('Product 1', 'Product 2')
         end
@@ -124,7 +103,7 @@ RSpec.describe ProductsController do
           }
           response_body = JSON.parse(last_response.body)
           product = response_body['products'].first
-          
+
           expect(product).to have_key('id')
           expect(product).to have_key('name')
           expect(product).to have_key('created_at')
@@ -137,7 +116,7 @@ RSpec.describe ProductsController do
             'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
           }
           response_body = JSON.parse(last_response.body)
-          
+
           expect(response_body['products']).to eq([])
         end
       end
@@ -163,7 +142,7 @@ RSpec.describe ProductsController do
           'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
         }
         response_body = JSON.parse(last_response.body)
-        
+
         expect(response_body['error']).to eq('Method not allowed')
       end
     end

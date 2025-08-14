@@ -5,15 +5,19 @@ require 'json'
 class AuthController
   def call(env)
     request = Rack::Request.new(env)
-    
+
     return method_not_allowed unless request.post?
-    
-    body = JSON.parse(request.body.read) rescue {}
+
+    body = begin
+      JSON.parse(request.body.read)
+    rescue StandardError
+      {}
+    end
     username = body['username']
     password = body['password']
-    
+
     return bad_request('Missing username or password') if username.nil? || password.nil?
-    
+
     if authenticate(username, password)
       token = generate_token(username)
       response = { token: token, expires_in: 3600 }

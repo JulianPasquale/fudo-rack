@@ -7,8 +7,8 @@ require_relative 'product'
 class ProductStore
   include Singleton
 
-  def initialize
-    @products = Concurrent::Hash.new
+  def initialize(products: Concurrent::Hash.new)
+    @products = products
   end
 
   def add_product_async(product)
@@ -19,15 +19,15 @@ class ProductStore
     product.id
   end
 
-  def get_products
+  def products
     @products.values
   end
 
-  def get_product(id)
+  def product(id)
     @products[id]
   end
 
-  def product_exists?(id)
+  def exists?(id)
     @products.key?(id)
   end
 

@@ -7,7 +7,7 @@ class StaticFileServer
     @cache_control = cache_control
   end
 
-  def call(env)
+  def call(_env)
     if File.exist?(@file_path)
       content = File.read(@file_path)
       headers = { 'Content-Type' => @content_type }

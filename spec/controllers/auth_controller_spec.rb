@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe AuthController do
+RSpec.describe AuthController do
   let(:controller) { AuthController.new }
 
   describe '#call' do

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
-
 RSpec.describe ProductStore do
   let(:store) { ProductStore.instance }
   let(:product) { Product.new(name: 'Test Product') }
@@ -26,23 +24,23 @@ RSpec.describe ProductStore do
 
     it 'does not add product immediately' do
       store.add_product_async(product)
-      expect(store.get_products).to be_empty
+      expect(store.products).to be_empty
     end
 
     it 'adds product after delay' do
       store.add_product_async(product)
-      
+
       # Wait a bit more than 5 seconds for the async task
       sleep(6)
-      
-      expect(store.get_products).to include(product)
+
+      expect(store.products).to include(product)
     end
   end
 
-  describe '#get_products' do
+  describe '#products' do
     context 'when no products exist' do
       it 'returns an empty array' do
-        expect(store.get_products).to eq([])
+        expect(store.products).to eq([])
       end
     end
 
@@ -53,43 +51,43 @@ RSpec.describe ProductStore do
       end
 
       it 'returns all products' do
-        expect(store.get_products).to include(product)
+        expect(store.products).to include(product)
       end
     end
   end
 
-  describe '#get_product' do
+  describe '#product' do
     context 'when product exists' do
       before do
         store.instance_variable_get(:@products)[product.id] = product
       end
 
       it 'returns the product' do
-        expect(store.get_product(product.id)).to eq(product)
+        expect(store.product(product.id)).to eq(product)
       end
     end
 
     context 'when product does not exist' do
       it 'returns nil' do
-        expect(store.get_product('non-existent-id')).to be_nil
+        expect(store.product('non-existent-id')).to be_nil
       end
     end
   end
 
-  describe '#product_exists?' do
+  describe '#exists?' do
     context 'when product exists' do
       before do
         store.instance_variable_get(:@products)[product.id] = product
       end
 
       it 'returns true' do
-        expect(store.product_exists?(product.id)).to be true
+        expect(store.exists?(product.id)).to be true
       end
     end
 
     context 'when product does not exist' do
       it 'returns false' do
-        expect(store.product_exists?('non-existent-id')).to be false
+        expect(store.exists?('non-existent-id')).to be false
       end
     end
   end
