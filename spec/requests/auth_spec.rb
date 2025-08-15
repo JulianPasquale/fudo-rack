@@ -20,7 +20,8 @@ RSpec.describe AuthController do
           expect(response_body['expires_in']).to eq(3600)
 
           # Verify the token contains the correct username
-          payload = AuthService.decode_token(response_body['token'])
+          strategy = AuthStrategies::JWTAuth.new
+          payload = strategy.decode_token(response_body['token'])
           expect(payload['username']).to eq('admin')
         end
       end

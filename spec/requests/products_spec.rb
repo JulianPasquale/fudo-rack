@@ -2,7 +2,9 @@
 
 RSpec.describe ProductsController do
   let(:params) { { name: 'Test Product' } }
-  let(:auth_token) { AuthService.generate_token('admin') }
+  let(:strategy) { AuthStrategies::JWTAuth.new }
+  let(:user) { User.new(username: 'admin', password: 'password') }
+  let(:auth_token) { strategy.generate_token(user) }
 
   describe '#call' do
     context 'when request is a POST verb' do

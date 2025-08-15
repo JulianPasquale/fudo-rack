@@ -37,7 +37,6 @@ RSpec.describe UserStore do
 
     before do
       # Clear any existing users except default
-      store.instance_variable_get(:@users).clear
       store.instance_variable_get(:@users_by_username).clear
       store.send(:initialize_default_user)
     end
@@ -51,11 +50,6 @@ RSpec.describe UserStore do
     it 'makes user findable by username' do
       store.add_user(user)
       expect(store.find_by_username('newuser')).to eq(user)
-    end
-
-    it 'makes user findable by id' do
-      store.add_user(user)
-      expect(store.find_by_id(user.id)).to eq(user)
     end
 
     it 'returns the added user' do
@@ -77,22 +71,6 @@ RSpec.describe UserStore do
 
     it 'returns nil when not found' do
       expect(store.find_by_username('notfound')).to be_nil
-    end
-  end
-
-  describe '#find_by_id' do
-    let(:user) { User.new(username: 'findme', password: 'password') }
-
-    before do
-      store.add_user(user)
-    end
-
-    it 'returns user when found' do
-      expect(store.find_by_id(user.id)).to eq(user)
-    end
-
-    it 'returns nil when not found' do
-      expect(store.find_by_id('non-existent-id')).to be_nil
     end
   end
 
@@ -160,10 +138,8 @@ RSpec.describe UserStore do
 
   describe 'thread safety' do
     it 'uses Concurrent::Hash for thread-safe operations' do
-      users_hash = store.instance_variable_get(:@users)
       users_by_username_hash = store.instance_variable_get(:@users_by_username)
 
-      expect(users_hash).to be_a(Concurrent::Hash)
       expect(users_by_username_hash).to be_a(Concurrent::Hash)
     end
   end

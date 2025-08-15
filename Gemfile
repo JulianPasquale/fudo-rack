@@ -7,6 +7,8 @@ ruby '3.4.5'
 gem 'concurrent-ruby', '~> 1.3'
 gem 'dotenv', '~> 2.8'
 gem 'json', '~> 2.8'
+gem 'jwt', '~> 3.1'
+gem 'pry', '~> 0.15.2'
 gem 'puma', '~> 6.6'
 gem 'rack', '~> 3.2'
 
@@ -21,4 +23,6 @@ group :development do
   gem 'rubocop', '~> 1.79'
 end
 
-gem 'jwt', '~> 3.1'
+group :test do
+  gem 'timecop', '~> 0.9.10'
+end

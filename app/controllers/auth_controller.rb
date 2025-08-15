@@ -2,8 +2,13 @@
 
 require 'json'
 require_relative '../services/auth_service'
+require_relative '../services/auth_strategies/jwt_auth'
 
 class AuthController
+  def initialize(strategy: AuthStrategies::JWTAuth.new)
+    @auth_service = AuthService.new(strategy: strategy)
+  end
+
   def call(env)
     request = Rack::Request.new(env)
 
@@ -19,13 +24,11 @@ class AuthController
 
     return bad_request('Missing username or password') if username.nil? || password.nil?
 
-    if AuthService.authenticate(username, password)
-      token = AuthService.generate_token(username)
-      response = { token: token, expires_in: AuthService::EXPIRATION_TIME }
-      json_response(200, response)
-    else
-      json_response(401, { error: 'Invalid credentials' })
-    end
+    auth_result = @auth_service.generate_token(username, password)
+
+    return json_response(401, { error: 'Invalid credentials' }) unless auth_result
+
+    json_response(200, { token: auth_result[:token], expires_in: auth_result[:expires_in] })
   end
 
   private

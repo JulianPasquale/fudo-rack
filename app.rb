@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
-require 'rack'
 require 'rack/deflater'
-require 'dotenv'
+
+# Require the gems listed in Gemfile
+Bundler.require(:default, :development, :test)
 
 # Load environment variables
 Dotenv.load
+
 require_relative 'app/models/user'
 require_relative 'app/models/user_store'
+require_relative 'app/services/auth_strategies/base_strategy'
+require_relative 'app/services/auth_strategies/jwt_auth'
 require_relative 'app/controllers/auth_controller'
 require_relative 'app/controllers/products_controller'
 require_relative 'app/middlewares/auth_middleware'
@@ -16,6 +20,7 @@ require_relative 'app/services/static_file_server'
 
 class App
   def self.new
+    # Create strategy instance to share between components
     Rack::Builder.new do
       use Rack::Deflater
 
@@ -24,7 +29,7 @@ class App
       end
 
       map '/products' do
-        use AuthMiddleware
+        use AuthMiddleware, strategy: AuthStrategies::JWTAuth.new
         run ProductsController.new
       end
 

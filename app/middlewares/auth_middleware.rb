@@ -2,10 +2,12 @@
 
 require 'json'
 require_relative '../services/auth_service'
+require_relative '../services/auth_strategies/jwt_auth'
 
 class AuthMiddleware
-  def initialize(app)
+  def initialize(app, strategy: AuthStrategies::JWTAuth.new)
     @app = app
+    @auth_service = AuthService.new(strategy: strategy)
   end
 
   def call(env)
@@ -16,9 +18,9 @@ class AuthMiddleware
 
     token = auth_header[7..]
 
-    return unauthorized_response unless AuthService.token_valid?(token)
+    return unauthorized_response unless (user = @auth_service.user_for_token(token))
 
-    env['current_user'] = AuthService.extract_username(token)
+    env['current_user'] = user
     @app.call(env)
   end
 
