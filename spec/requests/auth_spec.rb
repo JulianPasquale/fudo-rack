@@ -16,8 +16,12 @@ RSpec.describe AuthController do
           response_body = JSON.parse(last_response.body)
 
           expect(response_body['token']).to be_a(String)
-          expect(response_body['token']).to start_with('token_admin_')
+          expect(response_body['token'].split('.').length).to eq(3) # JWT format
           expect(response_body['expires_in']).to eq(3600)
+
+          # Verify the token contains the correct username
+          payload = AuthService.decode_token(response_body['token'])
+          expect(payload['username']).to eq('admin')
         end
       end
 
@@ -76,29 +80,6 @@ RSpec.describe AuthController do
           expect(response_body['error']).to eq('Method not allowed')
         end
       end
-    end
-  end
-
-  describe 'token generation' do
-    let(:controller) { AuthController.new }
-
-    it 'generates unique tokens for different users' do
-      allow(Time).to receive(:now).and_return(Time.at(1_234_567_890))
-
-      token1 = controller.send(:generate_token, 'user1')
-      token2 = controller.send(:generate_token, 'user2')
-
-      expect(token1).to eq('token_user1_1234567890')
-      expect(token2).to eq('token_user2_1234567890')
-      expect(token1).not_to eq(token2)
-    end
-
-    it 'includes timestamp in token' do
-      freeze_time = Time.at(1_234_567_890)
-      allow(Time).to receive(:now).and_return(freeze_time)
-
-      token = controller.send(:generate_token, 'admin')
-      expect(token).to include(freeze_time.to_i.to_s)
     end
   end
 end

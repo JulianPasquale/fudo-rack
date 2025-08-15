@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'json'
+require_relative '../services/auth_service'
 
 class AuthController
   def call(env)
@@ -18,9 +19,9 @@ class AuthController
 
     return bad_request('Missing username or password') if username.nil? || password.nil?
 
-    if authenticate(username, password)
-      token = generate_token(username)
-      response = { token: token, expires_in: 3600 }
+    if AuthService.authenticate(username, password)
+      token = AuthService.generate_token(username)
+      response = { token: token, expires_in: AuthService::EXPIRATION_TIME }
       json_response(200, response)
     else
       json_response(401, { error: 'Invalid credentials' })
@@ -28,14 +29,6 @@ class AuthController
   end
 
   private
-
-  def authenticate(username, password)
-    username == 'admin' && password == 'password'
-  end
-
-  def generate_token(username)
-    "token_#{username}_#{Time.now.to_i}"
-  end
 
   def json_response(status, data)
     [status, { 'Content-Type' => 'application/json' }, [JSON.generate(data)]]

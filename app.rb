@@ -2,9 +2,16 @@
 
 require 'rack'
 require 'rack/deflater'
+require 'dotenv'
+
+# Load environment variables
+Dotenv.load
+require_relative 'app/models/user'
+require_relative 'app/models/user_store'
 require_relative 'app/controllers/auth_controller'
 require_relative 'app/controllers/products_controller'
 require_relative 'app/middlewares/auth_middleware'
+require_relative 'app/services/auth_service'
 require_relative 'app/services/static_file_server'
 
 class App

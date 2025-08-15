@@ -2,6 +2,7 @@
 
 RSpec.describe ProductsController do
   let(:params) { { name: 'Test Product' } }
+  let(:auth_token) { AuthService.generate_token('admin') }
 
   describe '#call' do
     context 'when request is a POST verb' do
@@ -9,7 +10,7 @@ RSpec.describe ProductsController do
         it 'returns an accepted status' do
           post '/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
-            'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+            'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           expect(last_response.status).to eq(202)
           response_body = JSON.parse(last_response.body)
@@ -24,7 +25,7 @@ RSpec.describe ProductsController do
 
           post '/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
-            'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+            'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
         end
       end
@@ -35,7 +36,7 @@ RSpec.describe ProductsController do
         it 'returns bad_format status' do
           post '/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
-            'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+            'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           expect(last_response.status).to eq(400)
           response_body = JSON.parse(last_response.body)
@@ -49,7 +50,7 @@ RSpec.describe ProductsController do
         it 'returns 400 status' do
           post '/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
-            'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+            'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           expect(last_response.status).to eq(400)
           response_body = JSON.parse(last_response.body)
@@ -61,7 +62,7 @@ RSpec.describe ProductsController do
         it 'returns 400 status' do
           post '/products', 'invalid json', {
             'CONTENT_TYPE' => 'application/json',
-            'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+            'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           expect(last_response.status).to eq(400)
         end
@@ -79,14 +80,14 @@ RSpec.describe ProductsController do
 
         it 'returns 200 status' do
           get '/products', {}, {
-            'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+            'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           expect(last_response.status).to eq(200)
         end
 
         it 'returns all products as JSON' do
           get '/products', {}, {
-            'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+            'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           response_body = JSON.parse(last_response.body)
 
@@ -99,7 +100,7 @@ RSpec.describe ProductsController do
 
         it 'returns products with correct structure' do
           get '/products', {}, {
-            'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+            'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           response_body = JSON.parse(last_response.body)
           product = response_body['products'].first
@@ -113,7 +114,7 @@ RSpec.describe ProductsController do
       context 'with no products' do
         it 'returns empty products array' do
           get '/products', {}, {
-            'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+            'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           response_body = JSON.parse(last_response.body)
 
@@ -125,21 +126,21 @@ RSpec.describe ProductsController do
     context 'with unsupported HTTP method' do
       it 'returns method not allowed for PUT request' do
         put '/products', {}, {
-          'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+          'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
         }
         expect(last_response.status).to eq(405)
       end
 
       it 'returns method not allowed for DELETE request' do
         delete '/products', {}, {
-          'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+          'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
         }
         expect(last_response.status).to eq(405)
       end
 
       it 'returns method not allowed error message' do
         put '/products', {}, {
-          'HTTP_AUTHORIZATION' => 'Bearer token_admin_1234567890'
+          'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
         }
         response_body = JSON.parse(last_response.body)
 
