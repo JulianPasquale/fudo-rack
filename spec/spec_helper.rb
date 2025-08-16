@@ -1,28 +1,9 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-require 'rack/test'
-require 'json'
-require 'dotenv'
+ENV['RACK_ENV'] = 'test'
 
-# Load test environment variables
-ENV['USERNAME'] = 'admin'
-ENV['PASSWORD'] = 'password'
-ENV['JWT_SECRET'] = 'test_jwt_secret_key_for_specs'
-
-# Require application files
+require_relative '../config/boot'
 require_relative '../app'
-require_relative '../app/models/user'
-require_relative '../app/models/user_store'
-require_relative '../app/models/product'
-require_relative '../app/models/product_store'
-require_relative '../app/services/auth_strategies/base_strategy'
-require_relative '../app/services/auth_strategies/jwt_auth'
-require_relative '../app/controllers/auth_controller'
-require_relative '../app/controllers/products_controller'
-require_relative '../app/middlewares/auth_middleware'
-require_relative '../app/services/auth_service'
-require_relative '../app/services/static_file_server'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

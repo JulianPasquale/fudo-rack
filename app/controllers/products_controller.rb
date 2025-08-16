@@ -3,6 +3,7 @@
 require 'json'
 require_relative '../models/product_store'
 require_relative '../services/products/create_service'
+require_relative '../services/response_handler'
 
 class ProductsController
   def call(env)
@@ -14,7 +15,7 @@ class ProductsController
     when 'GET'
       index
     else
-      method_not_allowed
+      ResponseHandler.error(:method_not_allowed, 'Method not allowed')
     end
   end
 
@@ -24,7 +25,7 @@ class ProductsController
     params = request.env['rack.parsed_params'] || {}
     name = params['name']
 
-    return bad_request('Missing product name') if name.nil? || name.empty?
+    return ResponseHandler.error(:bad_request, 'Missing product name') if name.nil? || name.empty?
 
     id = Products::CreateService.new.create(name)
     response = {
@@ -32,23 +33,11 @@ class ProductsController
       message: 'Product creation started. It will be available in 5 seconds.',
       status: 'pending'
     }
-    json_response(202, response)
+    ResponseHandler.json(:accepted, response)
   end
 
   def index
     products = ProductStore.instance.products.map(&:to_h)
-    json_response(200, { products: products })
-  end
-
-  def json_response(status, data)
-    [status, { 'Content-Type' => 'application/json' }, [JSON.generate(data)]]
-  end
-
-  def method_not_allowed
-    [405, { 'Content-Type' => 'application/json' }, [JSON.generate({ error: 'Method not allowed' })]]
-  end
-
-  def bad_request(message)
-    [400, { 'Content-Type' => 'application/json' }, [JSON.generate({ error: message })]]
+    ResponseHandler.json(:ok, { products: products })
   end
 end

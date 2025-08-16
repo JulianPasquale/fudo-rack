@@ -3,6 +3,7 @@
 require 'json'
 require_relative '../services/auth_service'
 require_relative '../services/auth_strategies/jwt_auth'
+require_relative '../services/response_handler'
 
 class AuthMiddleware
   def initialize(app, strategy: AuthStrategies::JWTAuth.new)
@@ -14,19 +15,15 @@ class AuthMiddleware
     request = Rack::Request.new(env)
     auth_header = request.get_header('HTTP_AUTHORIZATION')
 
-    return unauthorized_response if auth_header.nil? || !auth_header&.start_with?('Bearer ')
+    return ResponseHandler.error(:unauthorized, 'Unauthorized') if auth_header.nil? || !auth_header&.start_with?('Bearer ')
 
     token = auth_header[7..]
 
-    return unauthorized_response unless (user = @auth_service.user_for_token(token))
+    return ResponseHandler.error(:unauthorized, 'Unauthorized') unless (user = @auth_service.user_for_token(token))
 
     env['current_user'] = user
     @app.call(env)
   end
 
   private
-
-  def unauthorized_response
-    [401, { 'Content-Type' => 'application/json' }, [JSON.generate({ error: 'Unauthorized' })]]
-  end
 end
