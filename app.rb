@@ -20,7 +20,6 @@ require_relative 'app/services/static_file_server'
 
 class App
   def self.new
-    # Create strategy instance to share between components
     Rack::Builder.new do
       use Rack::Deflater
 

@@ -1,0 +1,26 @@
+# Technical documentation
+
+This file intends to document the arquitectural decisions made in the app and explain why it's implemented this way.
+
+## Web server setup
+The app is configured to use the Puma web server. Since products and users data is stored in memory, Puma will only spin up one worker but with multiple threads.
+Workers are separate processes and they do not share memory spaces, so if we had multiple workers it could happend for instance that you create a product and then try to get the products list, but the one you created is not included there because the second request was not handled by the same worker that attended the first one. Of course this doesn't scale and is very bad, but to fix it we should store the data somewhere else first.
+
+## Routing
+The paths and routing to controllers is implemented using `Rack::Builder` and `Rack::URLMap`. Would be nice to have some extra layers (or maybe just use a gem or a few pieces from Rails) to have a better mapping solution that has built-in support for urls like `products/:id` without needed regular expressions, but I wanted to keep it simple.
+
+## Async processing
+To be able to create the product asynchronously, the app uses the [Concurrent::ScheduledTask](https://ruby-concurrency.github.io/concurrent-ruby/master/Concurrent/ScheduledTask.html) class from the [concurrent-ruby](https://github.com/ruby-concurrency/concurrent-ruby) gem, a very solid and used solution (even Rails uses this internally).
+
+## Thread safety
+In Ruby, classes like `Array` and [Hash](https://bugs.ruby-lang.org/issues/19237#note-2) are not thread-safe. This means that read/write operations can result in inconsistent status when called for the same instance from different threads.
+
+The section above talks about concurrent-ruby and how this app runs concurrent operations, but this gems does not completely solve the issue. It does provide some classes like `Concurrent::Hash.new` that are meant to be "thread-safe" implementations of the Ruby classes, but in some scenarios this is not [completely true](https://github.com/ruby-concurrency/concurrent-ruby/issues/929).
+
+## Data storage
+Since we want to keep users and products in memory, The `ProductStore` and `UserStore` classes implemente the Singleton pattern so we can access the same instance everywhere within the app. Since the app only allows to create products, there is a service object that adds the products to the store and implements the asynchronous logic.
+
+## Auth strategies
+The auth endpoints implement a JWT based authentication. The code actually has a generic `BaseStrategy` class that acts as an interface for any kind of strategy that we want to implement. To keep it simple I only implemented the JWT strategy, but extending this would be super simple.
+Strategies are being passed to the `AuthService` and middleware using dependency injection, so no major code changes would be needed to add/replace auth strategies.
+

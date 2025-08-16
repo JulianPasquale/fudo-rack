@@ -2,6 +2,8 @@
 
 JWT-authenticated REST API for product management built with Rack for Fudo.
 
+For more details around the technical decisions made in this implementation, checkout the [docs.md](./docs.md) file.
+
 ## Getting Started
 
 ### Requirements
