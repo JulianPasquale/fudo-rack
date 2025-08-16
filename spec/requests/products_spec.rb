@@ -128,27 +128,19 @@ RSpec.describe ProductsController do
     end
 
     context 'with unsupported HTTP method' do
-      it 'returns method not allowed for PUT request' do
-        put '/api/v1/products', {}, {
-          'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
-        }
-        expect(last_response.status).to eq(405)
-      end
+      context 'with non-POST request' do
+        it 'returns method not allowed status' do
+          %i[put delete].each do |verb|
+            public_send(verb, '/api/v1/products', {}.to_json, {
+                          'CONTENT_TYPE' => 'application/json',
+                          'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
+                        })
+            expect(last_response.status).to eq(405)
+            response_body = JSON.parse(last_response.body)
 
-      it 'returns method not allowed for DELETE request' do
-        delete '/api/v1/products', {}, {
-          'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
-        }
-        expect(last_response.status).to eq(405)
-      end
-
-      it 'returns method not allowed error message' do
-        put '/api/v1/products', {}, {
-          'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
-        }
-        response_body = JSON.parse(last_response.body)
-
-        expect(response_body['error']).to eq('Method not allowed')
+            expect(response_body['error']).to eq('Method not allowed')
+          end
+        end
       end
     end
 

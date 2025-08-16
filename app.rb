@@ -15,6 +15,7 @@ require_relative 'app/services/auth_strategies/jwt_auth'
 require_relative 'app/controllers/auth_controller'
 require_relative 'app/controllers/products_controller'
 require_relative 'app/middlewares/auth_middleware'
+require_relative 'app/middlewares/json_validator'
 require_relative 'app/services/auth_service'
 require_relative 'app/services/static_file_server'
 
@@ -24,10 +25,12 @@ class App
       use Rack::Deflater
 
       map '/api/v1/log_in' do
+        use JSONValidator, require_json: true
         run AuthController.new
       end
 
       map '/api/v1/products' do
+        use JSONValidator, require_json: true
         use AuthMiddleware, strategy: AuthStrategies::JWTAuth.new
         run ProductsController.new
       end

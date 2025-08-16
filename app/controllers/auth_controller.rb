@@ -14,13 +14,9 @@ class AuthController
 
     return method_not_allowed unless request.post?
 
-    body = begin
-      JSON.parse(request.body.read)
-    rescue StandardError
-      {}
-    end
-    username = body['username']
-    password = body['password']
+    params = request.env['rack.parsed_params'] || {}
+    username = params['username']
+    password = params['password']
 
     return bad_request('Missing username or password') if username.nil? || password.nil?
 

@@ -21,12 +21,8 @@ class ProductsController
   private
 
   def create(request)
-    body = begin
-      JSON.parse(request.body.read)
-    rescue StandardError
-      {}
-    end
-    name = body['name']
+    params = request.env['rack.parsed_params'] || {}
+    name = params['name']
 
     return bad_request('Missing product name') if name.nil? || name.empty?
 
