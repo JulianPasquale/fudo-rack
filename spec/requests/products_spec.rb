@@ -10,7 +10,7 @@ RSpec.describe ProductsController do
     context 'when request is a POST verb' do
       context 'when product name is provided' do
         it 'returns an accepted status' do
-          post '/products', params.to_json, {
+          post '/api/v1/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
@@ -27,7 +27,7 @@ RSpec.describe ProductsController do
           expect(Products::CreateService).to receive(:new).and_return(service_instance)
           expect(service_instance).to receive(:create).with('Test Product').and_return(SecureRandom.uuid)
 
-          post '/products', params.to_json, {
+          post '/api/v1/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
@@ -38,7 +38,7 @@ RSpec.describe ProductsController do
         let(:params) { {} }
 
         it 'returns bad_format status' do
-          post '/products', params.to_json, {
+          post '/api/v1/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
@@ -52,7 +52,7 @@ RSpec.describe ProductsController do
         let(:params) { { name: '' } }
 
         it 'returns 400 status' do
-          post '/products', params.to_json, {
+          post '/api/v1/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
@@ -64,7 +64,7 @@ RSpec.describe ProductsController do
 
       context 'when JSON is invalid' do
         it 'returns 400 status' do
-          post '/products', 'invalid json', {
+          post '/api/v1/products', 'invalid json', {
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
@@ -83,14 +83,14 @@ RSpec.describe ProductsController do
         end
 
         it 'returns 200 status' do
-          get '/products', {}, {
+          get '/api/v1/products', {}, {
             'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           expect(last_response.status).to eq(200)
         end
 
         it 'returns all products as JSON' do
-          get '/products', {}, {
+          get '/api/v1/products', {}, {
             'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           response_body = JSON.parse(last_response.body)
@@ -103,7 +103,7 @@ RSpec.describe ProductsController do
         end
 
         it 'returns products with correct structure' do
-          get '/products', {}, {
+          get '/api/v1/products', {}, {
             'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           response_body = JSON.parse(last_response.body)
@@ -117,7 +117,7 @@ RSpec.describe ProductsController do
 
       context 'with no products' do
         it 'returns empty products array' do
-          get '/products', {}, {
+          get '/api/v1/products', {}, {
             'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
           response_body = JSON.parse(last_response.body)
@@ -129,21 +129,21 @@ RSpec.describe ProductsController do
 
     context 'with unsupported HTTP method' do
       it 'returns method not allowed for PUT request' do
-        put '/products', {}, {
+        put '/api/v1/products', {}, {
           'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
         }
         expect(last_response.status).to eq(405)
       end
 
       it 'returns method not allowed for DELETE request' do
-        delete '/products', {}, {
+        delete '/api/v1/products', {}, {
           'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
         }
         expect(last_response.status).to eq(405)
       end
 
       it 'returns method not allowed error message' do
-        put '/products', {}, {
+        put '/api/v1/products', {}, {
           'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
         }
         response_body = JSON.parse(last_response.body)
@@ -154,14 +154,14 @@ RSpec.describe ProductsController do
 
     context 'without authorization' do
       it 'returns unauthorized for POST request' do
-        post '/products', { name: 'Test' }.to_json, {
+        post '/api/v1/products', { name: 'Test' }.to_json, {
           'CONTENT_TYPE' => 'application/json'
         }
         expect(last_response.status).to eq(401)
       end
 
       it 'returns unauthorized for GET request' do
-        get '/products'
+        get '/api/v1/products'
         expect(last_response.status).to eq(401)
       end
     end

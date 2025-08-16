@@ -24,11 +24,11 @@ class App
     Rack::Builder.new do
       use Rack::Deflater
 
-      map '/auth' do
+      map '/api/v1/log_in' do
         run AuthController.new
       end
 
-      map '/products' do
+      map '/api/v1/products' do
         use AuthMiddleware, strategy: AuthStrategies::JWTAuth.new
         run ProductsController.new
       end

@@ -6,7 +6,7 @@ RSpec.describe AuthController do
   let(:params) { { username: 'admin', password: 'password' } }
   describe '#call' do
     context 'when request is a POST verb' do
-      subject { post '/auth', params.to_json, { 'CONTENT_TYPE' => 'application/json' } }
+      subject { post '/api/v1/log_in', params.to_json, { 'CONTENT_TYPE' => 'application/json' } }
 
       context 'with valid credentials' do
         it 'returns success status' do
@@ -74,7 +74,7 @@ RSpec.describe AuthController do
     context 'with non-POST request' do
       it 'returns method not allowed status' do
         %i[get put delete].each do |verb|
-          public_send(verb, '/auth')
+          public_send(verb, '/api/v1/log_in')
           expect(last_response.status).to eq(405)
           response_body = JSON.parse(last_response.body)
 
