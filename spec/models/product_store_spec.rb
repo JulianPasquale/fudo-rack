@@ -16,24 +16,15 @@ RSpec.describe ProductStore do
     end
   end
 
-  describe '#add_product_async' do
-    it 'returns the product id immediately' do
-      id = store.add_product_async(product)
-      expect(id).to eq(product.id)
-    end
-
-    it 'does not add product immediately' do
-      store.add_product_async(product)
-      expect(store.products).to be_empty
-    end
-
-    it 'adds product after delay' do
-      store.add_product_async(product)
-
-      # Wait a bit more than 5 seconds for the async task
-      sleep(6)
-
+  describe '#add_product' do
+    it 'adds product immediately' do
+      store.add_product(product)
       expect(store.products).to include(product)
+    end
+
+    it 'stores product with correct id' do
+      store.add_product(product)
+      expect(store.product(product.id)).to eq(product)
     end
   end
 

@@ -2,6 +2,7 @@
 
 require 'json'
 require_relative '../models/product_store'
+require_relative '../services/products/create_service'
 
 class ProductsController
   def call(env)
@@ -29,8 +30,7 @@ class ProductsController
 
     return bad_request('Missing product name') if name.nil? || name.empty?
 
-    product = Product.new(name: name)
-    id = ProductStore.instance.add_product_async(product)
+    id = Products::CreateService.new.create(name)
     response = {
       id: id,
       message: 'Product creation started. It will be available in 5 seconds.',

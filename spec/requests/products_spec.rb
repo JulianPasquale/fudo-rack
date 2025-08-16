@@ -22,8 +22,10 @@ RSpec.describe ProductsController do
           expect(response_body['status']).to eq('pending')
         end
 
-        it 'calls ProductStore to add product asynchronously' do
-          expect(ProductStore.instance).to receive(:add_product_async).and_return(SecureRandom.uuid)
+        it 'calls Products::CreateService to create product asynchronously' do
+          service_instance = instance_double(Products::CreateService)
+          expect(Products::CreateService).to receive(:new).and_return(service_instance)
+          expect(service_instance).to receive(:create).with('Test Product').and_return(SecureRandom.uuid)
 
           post '/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',

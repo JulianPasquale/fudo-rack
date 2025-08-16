@@ -11,12 +11,8 @@ class ProductStore
     @products = products
   end
 
-  def add_product_async(product)
-    Concurrent::ScheduledTask.execute(5) do
-      @products[product.id] = product
-    end
-
-    product.id
+  def add_product(product)
+    @products[product.id] = product
   end
 
   def products
