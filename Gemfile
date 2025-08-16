@@ -4,11 +4,25 @@ source 'https://rubygems.org'
 
 ruby '3.4.5'
 
-gem "rack", "~> 3.2"
+gem 'concurrent-ruby', '~> 1.3'
+gem 'dotenv', '~> 2.8'
+gem 'json', '~> 2.8'
+gem 'jwt', '~> 3.1'
+gem 'pry', '~> 0.15.2'
+gem 'puma', '~> 6.6'
+gem 'rack', '~> 3.2'
 
-gem "puma", "~> 6.6"
+group :development, :test do
+  gem 'rack-test', '~> 2.1'
+  gem 'rspec', '~> 3.13'
+end
 
 group :development do
-  gem "rerun", "~> 0.14"
-  gem "listen", "~> 3.9"
+  gem 'listen', '~> 3.9'
+  gem 'rerun', '~> 0.14'
+  gem 'rubocop', '~> 1.79'
+end
+
+group :test do
+  gem 'timecop', '~> 0.9.10'
 end
