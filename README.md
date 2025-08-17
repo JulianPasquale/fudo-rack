@@ -2,9 +2,9 @@
 
 JWT-authenticated REST API for product management built with Rack for Fudo.
 
-For more details around the technical decisions made in this implementation, checkout the [docs/technical.md](./docs/technical.md) file.
+For more details around the technical decisions made in this implementation, check out the [docs/technical.md](./docs/technical.md) file.
 
-OpenAPI spec are hosted in [Github pages](https://julianpasquale.github.io/fudo-rack/).
+OpenAPI specs are hosted in [Github pages](https://julianpasquale.github.io/fudo-rack/).
 
 ## Getting Started
 
@@ -46,7 +46,7 @@ The app also comes with a [devcontainers](https://code.visualstudio.com/docs/dev
 ## API Endpoints
 
 ### Authentication
-This endpoints generates a JWT token when the username and password combination is correct.
+This endpoint generates a JWT token when the username and password combination is correct.
 
 ```bash
 # Login (get JWT token)
@@ -56,7 +56,7 @@ curl -X POST http://localhost:3000/api/v1/log_in \
 ```
 
 ### Products (requires authentication)
-These endpoinsts allow to list and create products.
+These endpoints allow to list and create products.
 
 **Products are stored in memory, this means that everytime you kill or restart the server, the data will be cleared.**
 
