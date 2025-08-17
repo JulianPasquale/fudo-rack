@@ -1,10 +1,8 @@
 # Fudo Rack
 
-JWT-authenticated REST API for product management built with Rack for Fudo.
+This is an alternative version. It setups a SQlite database and uses ActiveRecord (not all the Rails gems, only the ORM). For background processing, we use Sidekiq jobs.
 
-For more details around the technical decisions made in this implementation, checkout the [docs/technical.md](./docs/technical.md) file.
-
-OpenAPI spec are hosted in [Github pages](https://julianpasquale.github.io/fudo-rack/).
+This version provides better scalability than persisting the data in memory since it can be scaled to have multiple workers running at the same time.
 
 ## Getting Started
 
@@ -12,6 +10,7 @@ OpenAPI spec are hosted in [Github pages](https://julianpasquale.github.io/fudo-
 
 - Ruby 3.4.5
 - Bundler gem
+- Redis
 
 ### Local Development
 
@@ -20,23 +19,35 @@ OpenAPI spec are hosted in [Github pages](https://julianpasquale.github.io/fudo-
    bundle install
    ```
 
+2. Setup database
+   ```bash
+   bundle exec rake db:create db:migrate
+   ```
+
 2. Start the server:
    ```bash
+   # Start both worker and web servers
+   ./bin/dev
+
+   # Or run these commands in different terminals
    bundle exec puma -C config/puma.rb
+   bundle exec sidekiq -r ./config/boot.rb
+
    ```
 
 3. The API will be available at `http://localhost:3000`
 
-### Docker
+### Docker Compose
+The app includes a docker-compose file that a Redis server, the Puma web server and the Sidekiq worker.
 
 1. Build the image:
    ```bash
-   docker build -t fudo-rack .
+   docker compose build
    ```
 
 2. Run the container:
    ```bash
-   docker run -p 3000:3000 fudo-rack
+   docker compose up
    ```
 
 ### Development with Devcontainers

@@ -2,6 +2,7 @@
 
 RSpec.describe Api::V1::AuthController do
   let(:controller) { AuthController.new }
+  let!(:admin_user) { User.create!(username: 'admin', password: 'password') }
 
   let(:params) { { username: 'admin', password: 'password' } }
   describe '#call' do

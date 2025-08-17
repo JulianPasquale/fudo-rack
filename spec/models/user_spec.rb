@@ -1,36 +1,54 @@
 # frozen_string_literal: true
 
 RSpec.describe User do
-  describe '#initialize' do
-    context 'with username and password' do
-      let(:user) { User.new(username: 'testuser', password: 'password123') }
+  describe 'validations' do
+    it 'validates presence of username' do
+      user = User.new(password: 'password123')
+      expect(user.valid?).to be false
+      expect(user.errors[:username]).to include("can't be blank")
+    end
+
+    it 'validates uniqueness of username' do
+      User.create!(username: 'testuser', password: 'password123')
+      user = User.new(username: 'testuser', password: 'password456')
+      expect(user.valid?).to be false
+      expect(user.errors[:username]).to include('has already been taken')
+    end
+
+    it 'validates presence of password on create' do
+      user = User.new(username: 'testuser')
+      expect(user.valid?).to be false
+      expect(user.errors[:password]).to include("can't be blank")
+    end
+  end
+
+  describe '#create' do
+    context 'with valid attributes' do
+      let(:user) { User.create!(username: 'testuser', password: 'password123') }
 
       it 'creates a user with a username' do
         expect(user.username).to eq('testuser')
       end
 
-      it 'generates a UUID for id' do
-        expect(user.id).to be_a(String)
-        expect(user.id).to match(/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/)
+      it 'generates an auto-incrementing id' do
+        expect(user.id).to be_a(Integer)
+        expect(user.id).to be > 0
       end
 
-      it 'sets created_at to current time' do
+      it 'sets created_at and updated_at' do
         expect(user.created_at).to be_within(1).of(Time.now)
+        expect(user.updated_at).to be_within(1).of(Time.now)
       end
-    end
 
-    context 'with custom id' do
-      let(:custom_id) { 'custom-id-123' }
-      let(:user) { User.new(username: 'testuser', password: 'password123', id: custom_id) }
-
-      it 'uses the provided id' do
-        expect(user.id).to eq(custom_id)
+      it 'hashes the password' do
+        expect(user.password_hash).to be_present
+        expect(user.password_hash).not_to eq('password123')
       end
     end
   end
 
   describe '#authenticated?' do
-    let(:user) { User.new(username: 'testuser', password: 'password123') }
+    let(:user) { User.create!(username: 'testuser', password: 'password123') }
 
     it 'returns true for correct password' do
       expect(user.authenticated?('password123')).to be true
@@ -50,7 +68,7 @@ RSpec.describe User do
   end
 
   describe '#to_h' do
-    let(:user) { User.new(username: 'testuser', password: 'password123') }
+    let(:user) { User.create!(username: 'testuser', password: 'password123') }
     let(:hash) { user.to_h }
 
     it 'returns a hash with user attributes' do
@@ -72,7 +90,7 @@ RSpec.describe User do
   end
 
   describe '#to_json' do
-    let(:user) { User.new(username: 'testuser', password: 'password123') }
+    let(:user) { User.create!(username: 'testuser', password: 'password123') }
 
     it 'returns a JSON string' do
       json_string = user.to_json
@@ -93,25 +111,25 @@ RSpec.describe User do
   end
 
   describe 'attribute access' do
-    let(:user) { User.new(username: 'testuser', password: 'password123') }
+    let(:user) { User.create!(username: 'testuser', password: 'password123') }
 
-    it 'provides read-only access to id' do
+    it 'provides access to id' do
       expect(user).to respond_to(:id)
-      expect(user).not_to respond_to(:id=)
+      expect(user).to respond_to(:id=)
     end
 
-    it 'provides read-only access to username' do
+    it 'provides access to username' do
       expect(user).to respond_to(:username)
-      expect(user).not_to respond_to(:username=)
+      expect(user).to respond_to(:username=)
     end
 
-    it 'provides read-only access to created_at' do
+    it 'provides access to created_at' do
       expect(user).to respond_to(:created_at)
-      expect(user).not_to respond_to(:created_at=)
+      expect(user).to respond_to(:created_at=)
     end
 
-    it 'does not provide access to password_hash' do
-      expect(user).not_to respond_to(:password_hash)
+    it 'provides access to password_hash' do
+      expect(user).to respond_to(:password_hash)
     end
   end
 end

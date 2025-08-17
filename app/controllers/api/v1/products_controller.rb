@@ -24,9 +24,8 @@ module Api
 
         return ResponseHandler.error(:bad_request, 'Missing product name') if name.nil? || name.empty?
 
-        id = Products::CreateService.new.create(name)
+        Products::CreateService.new.create(name)
         response = {
-          id: id,
           message: 'Product creation started. It will be available in 5 seconds.',
           status: 'pending'
         }
@@ -34,7 +33,7 @@ module Api
       end
 
       def index
-        products = ProductStore.instance.products.map(&:to_h)
+        products = Product.all.map(&:to_h)
         ResponseHandler.json(:ok, { products: products })
       end
     end

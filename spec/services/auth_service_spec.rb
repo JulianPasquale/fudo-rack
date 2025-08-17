@@ -4,6 +4,8 @@ RSpec.describe AuthService do
   let(:strategy) { AuthStrategies::JWTAuth.new(secret: 'test_secret') }
   subject { described_class.new(strategy: strategy) }
 
+  let!(:admin_user) { User.create!(username: 'admin', password: 'password') }
+
   describe '#generate_token' do
     context 'with valid credentials' do
       it 'returns hash with user, token and expires_in' do
@@ -39,11 +41,8 @@ RSpec.describe AuthService do
   end
 
   describe '#user_for_token' do
-    let(:user_store) { UserStore.instance }
-    let(:user) { user_store.users.first }
-
     it 'returns the user instance' do
-      expect(subject.user_for_token(strategy.generate_token(user))).to eq(user)
+      expect(subject.user_for_token(strategy.generate_token(admin_user))).to eq(admin_user)
     end
 
     context 'when token is invalid' do

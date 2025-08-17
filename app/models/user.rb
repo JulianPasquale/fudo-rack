@@ -1,26 +1,22 @@
 # frozen_string_literal: true
 
-require 'securerandom'
+class User < ActiveRecord::Base
+  before_create :hash_password_field
 
-class User
-  attr_reader :id, :username, :created_at
+  validates :username, presence: true, uniqueness: true
+  validates :password, presence: true, on: :create
 
-  def initialize(username:, password:, id: nil)
-    @id = id || SecureRandom.uuid
-    @username = username
-    @password_hash = hash_password(password)
-    @created_at = Time.now
-  end
+  attr_accessor :password
 
   def authenticated?(password)
-    BCrypt::Password.new(@password_hash) == password
+    BCrypt::Password.new(password_hash) == password
   end
 
   def to_h
     {
-      id: @id,
-      username: @username,
-      created_at: @created_at
+      id: id,
+      username: username,
+      created_at: created_at
     }
   end
 
@@ -30,7 +26,7 @@ class User
 
   private
 
-  def hash_password(password)
-    BCrypt::Password.create(password)
+  def hash_password_field
+    self.password_hash = BCrypt::Password.create(password) if password
   end
 end

@@ -4,6 +4,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
+### Database Setup
+```bash
+# Setup database (create, migrate, seed)
+bundle exec rake db:setup
+
+# Create database
+bundle exec rake db:create
+
+# Run migrations
+bundle exec rake db:migrate
+
+# Seed database with default admin user
+bundle exec rake db:seed
+
+# Reset database (drop, create, migrate)
+bundle exec rake db:reset
+
+# Prepare test database
+bundle exec rake db:test:prepare
+
+# Check migration status
+bundle exec rake db:version
+```
+
 ### Running the Application
 ```bash
 # Start development server
@@ -13,6 +37,9 @@ bundle exec puma -C config/puma.rb
 bundle exec rerun -- bundle exec puma -C config/puma.rb
 # Or simply
 ./bin/dev
+
+# Start with foreman (runs app, worker, and redis)
+bundle exec foreman start
 ```
 
 ### Testing
@@ -46,6 +73,9 @@ docker build -t fudo-rack .
 
 # Run container
 docker run -p 3000:3000 fudo-rack
+
+# Run with docker-compose (app, worker, redis)
+docker-compose up
 ```
 
 ## Architecture Overview
@@ -55,14 +85,16 @@ This is a pure Rack application using `Rack::Builder` for routing without Rails.
 
 ### Key Architectural Patterns
 
-**Singleton Pattern for Data Storage**: `ProductStore` and `UserStore` use singleton pattern for in-memory data persistence. Data is lost on server restart.
+**ActiveRecord with SQLite**: Uses ActiveRecord ORM with SQLite database for data persistence. Database-backed models ensure data survives server restarts.
 
 **Strategy Pattern for Authentication**: Auth system uses dependency injection with `BaseStrategy` interface and `JWTAuth` implementation. New auth strategies can be added by implementing the base strategy interface.
 
 **Service Objects**: Business logic is encapsulated in service classes:
 - `AuthService` - handles authentication logic
-- `Products::CreateService` - handles async product creation
+- `Products::CreateService` - handles async product creation with Sidekiq
 - `ResponseHandler` - standardizes API responses
+
+**Background Jobs with Sidekiq**: Asynchronous processing using Sidekiq for background job processing with Redis as the message broker.
 
 **Middleware Chain**: Each route has its own middleware stack:
 - `JSONValidator` - validates JSON input
@@ -70,17 +102,12 @@ This is a pure Rack application using `Rack::Builder` for routing without Rails.
 
 ### Autoloading with Zeitwerk
 The application uses Zeitwerk for automatic class loading. Key configurations in `config/boot.rb`:
-- Collapses directory namespaces for controllers, models, middlewares, services
+- Collapses directory namespaces for controllers, models, middlewares, services, jobs
 - Custom inflections for `jwt_auth` → `JWTAuth` and `json_validator` → `JSONValidator`
 - Eager loading enabled in test environment
 
 ### Asynchronous Processing
-Product creation is asynchronous using `Concurrent::ScheduledTask` from concurrent-ruby gem. Products become available 5 seconds after creation request.
-
-### Thread Safety Considerations
-- Single Puma worker with multiple threads to maintain shared memory for in-memory storage
-- Uses concurrent-ruby for thread-safe operations
-- Ruby's built-in Hash/Array are not thread-safe, so the app relies on proper synchronization
+Product creation is asynchronous using Sidekiq background jobs. Products become available 5 seconds after creation request via `CreateProductJob`.
 
 ## API Structure
 
@@ -98,23 +125,29 @@ Product creation is asynchronous using `Concurrent::ScheduledTask` from concurre
 ## Data Models
 
 ### Product
-- `id`: UUID string (auto-generated)
+- `id`: Integer (auto-incrementing primary key)
 - `name`: String (required)
 - `created_at`: Timestamp
+- `updated_at`: Timestamp
 
 ### User
-- `id`: UUID string (auto-generated)  
-- `username`: String
-- `password_hash`: SHA256 with static salt (simplified for demo)
+- `id`: Integer (auto-incrementing primary key)
+- `username`: String (unique, required)
+- `password_hash`: BCrypt hash
 - `created_at`: Timestamp
+- `updated_at`: Timestamp
+
+### Background Jobs
+- `CreateProductJob`: Sidekiq job for asynchronous product creation
 
 ## Development Notes
 
-### Memory Storage Limitations
-All data is stored in memory using singleton instances. This means:
-- Data persists only during server runtime
-- Single worker configuration required to maintain data consistency
-- Not suitable for production use without external data store
+### Database Storage
+All data is stored in SQLite database with ActiveRecord ORM:
+- Data persists across server restarts
+- Supports multiple workers and processes
+- Migrations manage schema changes
+- Suitable for development and small production deployments
 
 ### Rubocop Configuration
 Custom rules in `.rubocop.yml`:

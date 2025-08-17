@@ -50,3 +50,7 @@ vendor/bundle
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# SQLite databases
+/db/*.sqlite3
+/db/*.sqlite3-*

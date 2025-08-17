@@ -1,0 +1,28 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - RACK_ENV=development
+      - REDIS_URL=redis://redis:6379/0
+      - BUNDLE_WITHOUT=""
+    volumes:
+      - .:/app
+      - ./db:/app/db
+      - bundle_cache:/usr/local/bundle
+    depends_on:
+      - redis
+    command: ./bin/dev
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
+    command: redis-server
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
+  bundle_cache:

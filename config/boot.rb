@@ -10,6 +10,12 @@ Bundler.require(:default, ENV['RACK_ENV'].to_sym)
 # Load environment variables
 Dotenv.load
 
+# Load database configuration
+require_relative 'database'
+
+# Load Sidekiq configuration
+require_relative 'sidekiq'
+
 # Setup Zeitwerk autoloader
 loader = Zeitwerk::Loader.new
 loader.push_dir(File.expand_path('../app', __dir__))
@@ -19,6 +25,7 @@ loader.collapse(File.expand_path('../app/controllers', __dir__))
 loader.collapse(File.expand_path('../app/models', __dir__))
 loader.collapse(File.expand_path('../app/middlewares', __dir__))
 loader.collapse(File.expand_path('../app/services', __dir__))
+loader.collapse(File.expand_path('../app/jobs', __dir__))
 
 # Configure namespace mappings for nested modules
 loader.inflector.inflect(

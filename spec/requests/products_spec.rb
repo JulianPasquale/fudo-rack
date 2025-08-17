@@ -3,7 +3,7 @@
 RSpec.describe Api::V1::ProductsController do
   let(:params) { { name: 'Test Product' } }
   let(:strategy) { AuthStrategies::JWTAuth.new }
-  let(:user) { User.new(username: 'admin', password: 'password') }
+  let!(:user) { User.create!(username: 'admin', password: 'password') }
   let(:auth_token) { strategy.generate_token(user) }
 
   describe '#call' do
@@ -17,7 +17,6 @@ RSpec.describe Api::V1::ProductsController do
           expect(last_response.status).to eq(202)
           response_body = JSON.parse(last_response.body)
 
-          expect(response_body['id']).to be_a(String)
           expect(response_body['message']).to eq('Product creation started. It will be available in 5 seconds.')
           expect(response_body['status']).to eq('pending')
         end
@@ -25,7 +24,7 @@ RSpec.describe Api::V1::ProductsController do
         it 'calls Products::CreateService to create product asynchronously' do
           service_instance = instance_double(Products::CreateService)
           expect(Products::CreateService).to receive(:new).and_return(service_instance)
-          expect(service_instance).to receive(:create).with('Test Product').and_return(SecureRandom.uuid)
+          expect(service_instance).to receive(:create).with('Test Product').and_return('pending')
 
           post '/api/v1/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
@@ -74,13 +73,9 @@ RSpec.describe Api::V1::ProductsController do
     end
 
     context 'when request is a GET verb' do
-      context 'when store has products' do
-        let(:first_product) { Product.new(name: 'Product 1') }
-        let(:second_product) { Product.new(name: 'Product 2') }
-
-        before do
-          allow(ProductStore.instance).to(receive(:products).and_return([first_product, second_product]))
-        end
+      context 'when database has products' do
+        let!(:first_product) { Product.create!(name: 'Product 1') }
+        let!(:second_product) { Product.create!(name: 'Product 2') }
 
         it 'returns 200 status' do
           get '/api/v1/products', {}, {

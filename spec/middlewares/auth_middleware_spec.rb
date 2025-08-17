@@ -6,10 +6,8 @@ RSpec.describe AuthMiddleware do
     [401, { 'Content-Type' => 'application/json' }, [JSON.generate({ error: 'Unauthorized' })]]
   end
 
-  # This is just to make sure I get the actual same user instance than the actual code.
-  # Otherwise ids might be different.
-  let(:user_store) { UserStore.instance }
-  let(:user) { user_store.users.first }
+  # Create a test user for the middleware tests
+  let!(:user) { User.create!(username: 'testuser', password: 'password123') }
 
   subject { AuthMiddleware.new(app, strategy: strategy) }
 

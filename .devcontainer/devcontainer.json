@@ -1,24 +1,22 @@
 {
   "name": "Fudo Rack Development",
-  "build": {
-    "dockerfile": "../Dockerfile",
-    "context": ".."
-  },
-  "containerEnv": {
-    "RACK_ENV": "development",
-    "BUNDLE_WITHOUT": "",
-    "BUNDLE_DEPLOYMENT": "0"
-  },
-  "remoteUser": "app",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
   "workspaceFolder": "/app",
-  "forwardPorts": [3000],
+  "forwardPorts": [3000, 6379],
   "portsAttributes": {
     "3000": {
       "label": "Rack App",
       "onAutoForward": "notify"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent"
     }
   },
   "postCreateCommand": "bundle install",
+  "shutdownAction": "stopCompose",
+  "remoteUser": "app",
   "customizations": {
     "vscode": {
       "extensions": [

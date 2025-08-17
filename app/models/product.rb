@@ -1,21 +1,13 @@
 # frozen_string_literal: true
 
-require 'securerandom'
-
-class Product
-  attr_reader :id, :name, :created_at
-
-  def initialize(name:, id: nil)
-    @id = id || SecureRandom.uuid
-    @name = name
-    @created_at = Time.now
-  end
+class Product < ActiveRecord::Base
+  validates :name, presence: true
 
   def to_h
     {
-      id: @id,
-      name: @name,
-      created_at: @created_at
+      id: id,
+      name: name,
+      created_at: created_at
     }
   end
 

@@ -17,13 +17,12 @@ RSpec.configure do |config|
 
   config.include Rack::Test::Methods
 
-  # Clear the singleton instances before each test
-  config.before(:each) do
-    if ProductStore.instance_variable_defined?(:@singleton__instance__)
-      ProductStore.remove_instance_variable(:@singleton__instance__)
-    end
-    if UserStore.instance_variable_defined?(:@singleton__instance__)
-      UserStore.remove_instance_variable(:@singleton__instance__)
+  # Wrap each test in a database transaction that gets rolled back so we keep the database clean
+  # between different test runs. Normally in Rails you would use the use_transactional_fixtures option for this.
+  config.around(:each) do |example|
+    ActiveRecord::Base.transaction do
+      example.run
+      raise ActiveRecord::Rollback
     end
   end
 
