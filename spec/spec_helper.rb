@@ -3,7 +3,6 @@
 ENV['RACK_ENV'] = 'test'
 
 require_relative '../config/boot'
-require_relative '../app'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

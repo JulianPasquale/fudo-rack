@@ -11,6 +11,7 @@ gem 'jwt', '~> 3.1'
 gem 'pry', '~> 0.15.2'
 gem 'puma', '~> 6.6'
 gem 'rack', '~> 3.2'
+gem 'zeitwerk', '~> 2.7'
 
 group :development, :test do
   gem 'rack-test', '~> 2.1'

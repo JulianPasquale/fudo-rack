@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 require 'json'
-require_relative '../services/auth_service'
-require_relative '../services/auth_strategies/jwt_auth'
-require_relative '../services/response_handler'
 
 class AuthMiddleware
   def initialize(app, strategy: AuthStrategies::JWTAuth.new)

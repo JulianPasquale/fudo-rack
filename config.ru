@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'app'
-require 'dotenv'
-
-# Load environment variables
-Dotenv.load
+require_relative 'config/boot'
 
 run App.new

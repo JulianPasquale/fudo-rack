@@ -71,6 +71,7 @@ GEM
     unicode-display_width (3.1.4)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
+    zeitwerk (2.7.3)
 
 PLATFORMS
   aarch64-linux
@@ -90,6 +91,7 @@ DEPENDENCIES
   rspec (~> 3.13)
   rubocop (~> 1.79)
   timecop (~> 0.9.10)
+  zeitwerk (~> 2.7)
 
 RUBY VERSION
    ruby 3.4.5p51

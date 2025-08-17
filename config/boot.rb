@@ -1,26 +1,35 @@
 # frozen_string_literal: true
 
-# Require the gems listed in Gemfile
+# Set default environment
+ENV['RACK_ENV'] ||= 'development'
+
+# Require bundler and the gems listed in Gemfile
+require 'bundler/setup'
 Bundler.require(:default, ENV['RACK_ENV'].to_sym)
 
 # Load environment variables
 Dotenv.load
 
-# Require application files in dependency order
-require_relative '../app/models/user'
-require_relative '../app/models/user_store'
-require_relative '../app/models/product'
-require_relative '../app/models/product_store'
+# Setup Zeitwerk autoloader
+require 'zeitwerk'
 
-require_relative '../app/services/auth_strategies/base_strategy'
-require_relative '../app/services/auth_strategies/jwt_auth'
-require_relative '../app/services/auth_service'
-require_relative '../app/services/response_handler'
-require_relative '../app/services/static_file_server'
-require_relative '../app/services/products/create_service'
+loader = Zeitwerk::Loader.new
+loader.push_dir(File.expand_path('../app', __dir__))
 
-require_relative '../app/middlewares/json_validator'
-require_relative '../app/middlewares/auth_middleware'
+# Configure collapse to avoid namespace prefixes for top-level directories
+loader.collapse(File.expand_path('../app/controllers', __dir__))
+loader.collapse(File.expand_path('../app/models', __dir__))
+loader.collapse(File.expand_path('../app/middlewares', __dir__))
+loader.collapse(File.expand_path('../app/services', __dir__))
 
-require_relative '../app/controllers/auth_controller'
-require_relative '../app/controllers/products_controller'
+# Configure namespace mappings for nested modules
+loader.inflector.inflect(
+  'jwt_auth' => 'JWTAuth',
+  'json_validator' => 'JSONValidator'
+)
+
+# Setup the autoloader
+loader.setup
+
+# Enable eager loading in test environment to catch issues early
+loader.eager_load if ENV['RACK_ENV'] == 'test'

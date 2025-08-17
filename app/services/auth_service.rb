@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../models/user_store'
-require_relative 'auth_strategies/jwt_auth'
-
 class AuthService
   def initialize(strategy: AuthStrategies::JWTAuth.new)
     @strategy = strategy

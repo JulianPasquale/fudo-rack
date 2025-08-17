@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'jwt'
-require_relative 'base_strategy'
 
 module AuthStrategies
   class JWTAuth < BaseStrategy

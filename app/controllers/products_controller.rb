@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 require 'json'
-require_relative '../models/product_store'
-require_relative '../services/products/create_service'
-require_relative '../services/response_handler'
 
 class ProductsController
   def call(env)

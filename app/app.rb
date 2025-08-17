@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'config/boot'
-
 class App
   def self.new
     Rack::Builder.new do

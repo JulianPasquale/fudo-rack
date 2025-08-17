@@ -2,8 +2,6 @@
 
 require 'concurrent'
 require 'singleton'
-require_relative '../../models/product'
-require_relative '../../models/product_store'
 
 module Products
   class CreateService
