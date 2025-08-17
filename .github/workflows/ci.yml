@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  RAILS_ENV: test
+  CI: true
+
+jobs:
+  tests:
+    name: RSpec Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/setup-ruby
+    - name: Run RSpec tests
+      run: bundle exec rspec
+
+  lint:
+    name: RuboCop Linting
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/setup-ruby
+    - name: Run RuboCop
+      run: bundle exec rubocop
+
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: false
+        tags: fudo-rack:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

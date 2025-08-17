@@ -1,0 +1,11 @@
+name: 'Setup Ruby'
+description: 'Sets up Ruby with bundler cache'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4.5'
+        bundler-cache: true

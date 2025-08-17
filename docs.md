@@ -29,3 +29,9 @@ The app includes the rubocop gem to make sure it follows some good practices. I 
 
 ## Autoloading
 The app uses the zeitwerk gem to automatically require all the files and classes. The setup is done in the `config/boot.rb` file.
+
+## Continuous Integration
+The CI process will use Github Actions to run 3 jobs in parallel:
+- Tests: This job runs the RSpec tests.
+- Lint: This job runs rubocop linter.
+- Docker: This job build the Dockerfile to make sure it generates a valid Docker image.
