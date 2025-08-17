@@ -1,14 +1,13 @@
-name: Deploy Swagger UI to GitHub Pages
+name: Deploy API docs UI to GitHub Pages
 
 on:
   workflow_dispatch:
-  pull_request:
   push:
-    # branches: [main]
+    branches: [main]
     paths:
       - 'openai.yaml'
       - 'redocly.yaml'
-      - '.github/workflows/deploy-swagger-to-pages.yml'
+      - '.github/workflows/deploy-api-docs-to-pages.yml'
 
 permissions:
   contents: read
