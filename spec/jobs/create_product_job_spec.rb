@@ -2,12 +2,10 @@
 
 RSpec.describe CreateProductJob do
   describe '#perform' do
-    context 'with valid product parameters' do
-      let(:product_params) { { 'name' => 'Test Product' } }
-
+    context 'with valid product name' do
       it 'creates a product with the given name' do
         expect {
-          CreateProductJob.new.perform(product_params)
+          CreateProductJob.new.perform('product_name' => 'Test Product')
         }.to change(Product, :count).by(1)
 
         product = Product.last
@@ -15,32 +13,26 @@ RSpec.describe CreateProductJob do
       end
     end
 
-    context 'with invalid product parameters' do
-      let(:product_params) { { 'name' => '' } }
-
-      it 'raises an error for invalid product data' do
+    context 'with invalid product name' do
+      it 'raises an error for empty product name' do
         expect {
-          CreateProductJob.new.perform(product_params)
+          CreateProductJob.new.perform('product_name' => '')
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
 
-      it 'does not create a product' do
+      it 'does not create a product with empty name' do
         expect {
           begin
-            CreateProductJob.new.perform(product_params)
+            CreateProductJob.new.perform('product_name' => '')
           rescue ActiveRecord::RecordInvalid
             # Swallow the expected error
           end
         }.not_to change(Product, :count)
       end
-    end
 
-    context 'with missing name parameter' do
-      let(:product_params) { {} }
-
-      it 'raises an error for missing name' do
+      it 'raises an error for nil product name' do
         expect {
-          CreateProductJob.new.perform(product_params)
+          CreateProductJob.new.perform('product_name' => nil)
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end

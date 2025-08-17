@@ -30,5 +30,8 @@ group :development do
 end
 
 group :test do
+  gem 'factory_bot', '~> 6.5'
+  gem 'rspec-sidekiq', '~> 5.2'
+  gem 'shoulda-matchers', '~> 6.0'
   gem 'timecop', '~> 0.9.10'
 end

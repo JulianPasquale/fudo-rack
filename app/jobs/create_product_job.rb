@@ -5,8 +5,8 @@ class CreateProductJob
 
   sidekiq_options retry: 3
 
-  def perform(product_params)
-    # Create product with the provided name
-    Product.create!(name: product_params['name'])
+  def perform(args)
+    product_name = args['product_name']
+    Product.create!(name: product_name)
   end
 end

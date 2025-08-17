@@ -1,30 +1,17 @@
 # frozen_string_literal: true
 
-RSpec.describe User do
+RSpec.describe User, type: :model do
   describe 'validations' do
-    it 'validates presence of username' do
-      user = User.new(password: 'password123')
-      expect(user.valid?).to be false
-      expect(user.errors[:username]).to include("can't be blank")
-    end
-
-    it 'validates uniqueness of username' do
-      User.create!(username: 'testuser', password: 'password123')
-      user = User.new(username: 'testuser', password: 'password456')
-      expect(user.valid?).to be false
-      expect(user.errors[:username]).to include('has already been taken')
-    end
-
-    it 'validates presence of password on create' do
-      user = User.new(username: 'testuser')
-      expect(user.valid?).to be false
-      expect(user.errors[:password]).to include("can't be blank")
-    end
+    subject { build(:user) }
+    
+    it { should validate_presence_of(:username) }
+    it { should validate_uniqueness_of(:username) }
+    it { should validate_presence_of(:password).on(:create) }
   end
 
   describe '#create' do
     context 'with valid attributes' do
-      let(:user) { User.create!(username: 'testuser', password: 'password123') }
+      let(:user) { create(:user, username: 'testuser') }
 
       it 'creates a user with a username' do
         expect(user.username).to eq('testuser')
@@ -48,7 +35,7 @@ RSpec.describe User do
   end
 
   describe '#authenticated?' do
-    let(:user) { User.create!(username: 'testuser', password: 'password123') }
+    let(:user) { create(:user, username: 'testuser') }
 
     it 'returns true for correct password' do
       expect(user.authenticated?('password123')).to be true
@@ -68,7 +55,7 @@ RSpec.describe User do
   end
 
   describe '#to_h' do
-    let(:user) { User.create!(username: 'testuser', password: 'password123') }
+    let(:user) { create(:user, username: 'testuser') }
     let(:hash) { user.to_h }
 
     it 'returns a hash with user attributes' do
@@ -90,7 +77,7 @@ RSpec.describe User do
   end
 
   describe '#to_json' do
-    let(:user) { User.create!(username: 'testuser', password: 'password123') }
+    let(:user) { create(:user, username: 'testuser') }
 
     it 'returns a JSON string' do
       json_string = user.to_json
@@ -111,7 +98,7 @@ RSpec.describe User do
   end
 
   describe 'attribute access' do
-    let(:user) { User.create!(username: 'testuser', password: 'password123') }
+    let(:user) { create(:user, username: 'testuser') }
 
     it 'provides access to id' do
       expect(user).to respond_to(:id)

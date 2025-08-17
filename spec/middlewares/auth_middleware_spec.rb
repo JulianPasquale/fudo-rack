@@ -7,7 +7,7 @@ RSpec.describe AuthMiddleware do
   end
 
   # Create a test user for the middleware tests
-  let!(:user) { User.create!(username: 'testuser', password: 'password123') }
+  let!(:user) { create(:user, username: 'testuser') }
 
   subject { AuthMiddleware.new(app, strategy: strategy) }
 

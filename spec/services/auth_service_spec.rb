@@ -4,7 +4,7 @@ RSpec.describe AuthService do
   let(:strategy) { AuthStrategies::JWTAuth.new(secret: 'test_secret') }
   subject { described_class.new(strategy: strategy) }
 
-  let!(:admin_user) { User.create!(username: 'admin', password: 'password') }
+  let!(:admin_user) { create(:user, username: 'admin', password: 'password') }
 
   describe '#generate_token' do
     context 'with valid credentials' do

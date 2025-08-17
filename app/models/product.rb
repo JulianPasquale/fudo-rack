@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Product < ActiveRecord::Base
+class Product < ApplicationRecord
   validates :name, presence: true
 
   def to_h

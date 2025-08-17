@@ -3,7 +3,7 @@
 RSpec.describe Api::V1::ProductsController do
   let(:params) { { name: 'Test Product' } }
   let(:strategy) { AuthStrategies::JWTAuth.new }
-  let!(:user) { User.create!(username: 'admin', password: 'password') }
+  let!(:user) { create(:user, username: 'admin', password: 'password') }
   let(:auth_token) { strategy.generate_token(user) }
 
   describe '#call' do
@@ -21,15 +21,17 @@ RSpec.describe Api::V1::ProductsController do
           expect(response_body['status']).to eq('pending')
         end
 
-        it 'calls Products::CreateService to create product asynchronously' do
-          service_instance = instance_double(Products::CreateService)
-          expect(Products::CreateService).to receive(:new).and_return(service_instance)
-          expect(service_instance).to receive(:create).with('Test Product').and_return('pending')
-
+        it 'schedules CreateProductJob to create product asynchronously' do
           post '/api/v1/products', params.to_json, {
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => "Bearer #{auth_token}"
           }
+
+          expect(CreateProductJob).to have_enqueued_sidekiq_job.with('product_name' => 'Test Product')
+
+          # Also verify the job is scheduled for the future (approximately 5 seconds)
+          scheduled_job = CreateProductJob.jobs.last
+          expect(scheduled_job['at']).to be_within(1).of(Time.now.to_f + 5)
         end
       end
 
@@ -74,8 +76,8 @@ RSpec.describe Api::V1::ProductsController do
 
     context 'when request is a GET verb' do
       context 'when database has products' do
-        let!(:first_product) { Product.create!(name: 'Product 1') }
-        let!(:second_product) { Product.create!(name: 'Product 2') }
+        let!(:first_product) { create(:product, name: 'Product 1') }
+        let!(:second_product) { create(:product, name: 'Product 2') }
 
         it 'returns 200 status' do
           get '/api/v1/products', {}, {

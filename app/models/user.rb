@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   before_create :hash_password_field
 
   validates :username, presence: true, uniqueness: true
