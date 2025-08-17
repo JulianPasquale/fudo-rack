@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'securerandom'
-require 'digest'
+require 'bcrypt'
 
 class User
   attr_reader :id, :username, :created_at
@@ -14,7 +14,7 @@ class User
   end
 
   def authenticated?(password)
-    hash_password(password) == @password_hash
+    BCrypt::Password.new(@password_hash) == password
   end
 
   def to_h
@@ -32,12 +32,6 @@ class User
   private
 
   def hash_password(password)
-    # Simple password hashing (in production, use bcrypt)
-    Digest::SHA256.hexdigest("#{password}#{salt}")
-  end
-
-  def salt
-    # Simple salt (in production, generate random salt per user)
-    'fudo_api_salt_2024'
+    BCrypt::Password.create(password)
   end
 end

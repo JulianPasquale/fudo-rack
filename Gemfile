@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 
 ruby '3.4.5'
 
+gem 'bcrypt', '~> 3.1'
 gem 'concurrent-ruby', '~> 1.3'
 gem 'dotenv', '~> 2.8'
 gem 'json', '~> 2.8'
