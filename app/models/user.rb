@@ -13,7 +13,7 @@ class User
     @created_at = Time.now
   end
 
-  def authenticate(password)
+  def authenticated?(password)
     hash_password(password) == @password_hash
   end
 
@@ -25,8 +25,8 @@ class User
     }
   end
 
-  def to_json(*args)
-    to_h.to_json(*args)
+  def to_json(*)
+    to_h.to_json(*)
   end
 
   private

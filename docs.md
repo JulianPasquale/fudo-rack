@@ -24,3 +24,8 @@ Since we want to keep users and products in memory, The `ProductStore` and `User
 The auth endpoints implement a JWT based authentication. The code actually has a generic `BaseStrategy` class that acts as an interface for any kind of strategy that we want to implement. To keep it simple I only implemented the JWT strategy, but extending this would be super simple.
 Strategies are being passed to the `AuthService` and middleware using dependency injection, so no major code changes would be needed to add/replace auth strategies.
 
+## Rubocop
+The app includes the rubocop gem to make sure it follows some good practices. I disabled a two cops because I don't think they are relevant or add any value, but it's just a personal opinion.
+
+## Autoloading
+The app uses the zeitwerk gem to automatically require all the files and classes. The setup is done in the `config/boot.rb` file.

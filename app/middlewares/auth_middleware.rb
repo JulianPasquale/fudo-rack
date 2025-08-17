@@ -12,7 +12,10 @@ class AuthMiddleware
     request = Rack::Request.new(env)
     auth_header = request.get_header('HTTP_AUTHORIZATION')
 
-    return ResponseHandler.error(:unauthorized, 'Unauthorized') if auth_header.nil? || !auth_header&.start_with?('Bearer ')
+    if auth_header.nil? || !auth_header&.start_with?('Bearer ')
+      return ResponseHandler.error(:unauthorized,
+                                   'Unauthorized')
+    end
 
     token = auth_header[7..]
 
@@ -21,6 +24,4 @@ class AuthMiddleware
     env['current_user'] = user
     @app.call(env)
   end
-
-  private
 end

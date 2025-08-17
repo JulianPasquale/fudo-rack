@@ -24,6 +24,4 @@ class AuthController
 
     ResponseHandler.json(:ok, { token: auth_result[:token], expires_in: auth_result[:expires_in] })
   end
-
-  private
 end

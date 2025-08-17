@@ -33,10 +33,12 @@ class UserStore
     @users_by_username.size
   end
 
+  # rubocop:disable Naming/PredicateMethod
   def authenticate(username, password)
     user = find_by_username(username)
-    user&.authenticate(password) || false
+    user&.authenticated?(password) || false
   end
+  # rubocop:enable Naming/PredicateMethod
 
   private
 

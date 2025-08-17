@@ -7,7 +7,7 @@ class AuthService
 
   def generate_token(username, password)
     user = UserStore.instance.find_by_username(username)
-    return unless user&.authenticate(password)
+    return unless user&.authenticated?(password)
 
     token = strategy.generate_token(user)
     {

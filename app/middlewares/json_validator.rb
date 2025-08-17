@@ -14,29 +14,39 @@ class JSONValidator
   def call(env)
     request = Rack::Request.new(env)
 
-    return @app.call(env) unless METHODS_WITH_BODY.include?(request.request_method)
+    return @app.call(env) unless body_method?(request)
 
-    content_type = request.content_type
+    validation_result = validate_request(request, env)
+    return validation_result if validation_result
 
-    return payload_too_large_response if request.content_length&.to_i&.>(@max_size)
-
-    body = request.body.read
-    request.body.rewind
-
-    return not_acceptable_response if @require_json && !json_content_type?(content_type)
-
-    begin
-      env['rack.parsed_params'] = JSON.parse(body)
-    rescue JSON::ParserError => e
-      return malformed_json_response(e.message)
-    end
-
-    # Parse params and add to env
-    add_merged_params(env, request)
     @app.call(env)
   end
 
   private
+
+  def body_method?(request)
+    METHODS_WITH_BODY.include?(request.request_method)
+  end
+
+  def validate_request(request, env)
+    return payload_too_large_response if request.content_length&.to_i&.>(@max_size)
+
+    content_type = request.content_type
+    return not_acceptable_response if @require_json && !json_content_type?(content_type)
+
+    body = request.body.read
+    request.body.rewind
+
+    parse_json_body(body, env, request)
+  end
+
+  def parse_json_body(body, env, request)
+    env['rack.parsed_params'] = JSON.parse(body)
+    add_merged_params(env, request)
+    nil
+  rescue JSON::ParserError => e
+    malformed_json_response(e.message)
+  end
 
   def json_content_type?(content_type)
     content_type&.include?('application/json')

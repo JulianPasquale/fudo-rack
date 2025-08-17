@@ -8,6 +8,7 @@ module AuthStrategies
     EXPIRATION_TIME = 3600
 
     def initialize(secret: ENV.fetch('JWT_SECRET', 'your_secret_key_here'))
+      super()
       @secret = secret
     end
 
