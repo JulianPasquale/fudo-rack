@@ -35,3 +35,4 @@ The CI process will use Github Actions to run 3 jobs in parallel:
 - Tests: This job runs the RSpec tests.
 - Lint: This job runs rubocop linter.
 - Docker: This job build the Dockerfile to make sure it generates a valid Docker image.
+- openapi-validation: Use the `redocly` CLI to validate the openapi spec.

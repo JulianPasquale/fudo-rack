@@ -72,9 +72,6 @@ curl -X POST http://localhost:3000/api/v1/products \
 
 ### Static Files
 ```bash
-# API info
-curl http://localhost:3000/
-
 # OpenAPI specification
 curl http://localhost:3000/openapi.yaml
 
