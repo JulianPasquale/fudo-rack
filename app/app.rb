@@ -6,12 +6,12 @@ class App
       use Rack::Deflater
 
       use Rack::Static,
-          urls: ['/openai.yaml', '/AUTHORS'],
+          urls: ['/openapi.yaml', '/AUTHORS'],
           root: '.',
           header_rules: [
-            # No cache for openapi (renamed to match file)
+            # No cache for openapi
             [
-              /openai\.yaml/,
+              /openapi\.yaml/,
               { 'Content-Type' => 'application/x-yaml', 'Cache-Control' => 'no-cache, no-store, must-revalidate' }
             ],
             # 24 hour cache for AUTHORS
@@ -20,13 +20,13 @@ class App
 
       map '/api/v1/log_in' do
         use JSONValidator, require_json: true
-        run AuthController.new
+        run Api::V1::AuthController.new
       end
 
       map '/api/v1/products' do
         use JSONValidator, require_json: true
         use AuthMiddleware, strategy: AuthStrategies::JWTAuth.new
-        run ProductsController.new
+        run Api::V1::ProductsController.new
       end
 
       map '/' do

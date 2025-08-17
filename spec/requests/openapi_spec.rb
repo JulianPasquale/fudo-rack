@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe 'OpenAPI endpoint' do
-  describe 'GET /openai.yaml' do
-    subject { get '/openai.yaml' }
+  describe 'GET /openapi.yaml' do
+    subject { get '/openapi.yaml' }
 
     it 'returns success status' do
       subject
@@ -33,7 +33,7 @@ RSpec.describe 'OpenAPI endpoint' do
 
     context 'when using HEAD request' do
       it 'supports HEAD requests with correct headers' do
-        head '/openai.yaml'
+        head '/openapi.yaml'
         expect(last_response.status).to eq(200)
         expect(last_response.headers['Content-Type']).to eq('application/x-yaml')
         expect(last_response.headers['Cache-Control']).to eq('no-cache, no-store, must-revalidate')

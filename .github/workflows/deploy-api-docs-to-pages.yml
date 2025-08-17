@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'openai.yaml'
+      - 'openapi.yaml'
       - 'redocly.yaml'
       - '.github/workflows/deploy-api-docs-to-pages.yml'
 
@@ -30,7 +30,7 @@ jobs:
         run: npm install -g @redocly/cli
 
       - name: Build documentation
-        run: redocly build-docs openai.yaml --output=docs/index.html
+        run: redocly build-docs openapi.yaml --output=docs/index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

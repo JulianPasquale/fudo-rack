@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe ProductsController do
+RSpec.describe Api::V1::ProductsController do
   let(:params) { { name: 'Test Product' } }
   let(:strategy) { AuthStrategies::JWTAuth.new }
   let(:user) { User.new(username: 'admin', password: 'password') }

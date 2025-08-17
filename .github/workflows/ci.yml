@@ -47,7 +47,7 @@ jobs:
       run: npm install -g @redocly/cli
 
     - name: Validate OpenAPI spec
-      run: redocly lint openai.yaml
+      run: redocly lint openapi.yaml
 
   docker:
     name: Docker Build

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe AuthController do
+RSpec.describe Api::V1::AuthController do
   let(:controller) { AuthController.new }
 
   let(:params) { { username: 'admin', password: 'password' } }
