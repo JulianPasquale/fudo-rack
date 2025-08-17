@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'securerandom'
-require 'bcrypt'
 
 class User
   attr_reader :id, :username, :created_at
