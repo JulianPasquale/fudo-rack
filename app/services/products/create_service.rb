@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'concurrent'
-require 'singleton'
-
 module Products
   class CreateService
     def create(name)

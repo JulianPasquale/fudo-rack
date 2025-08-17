@@ -22,7 +22,7 @@ module Api
 
         return ResponseHandler.error(:unauthorized, 'Invalid credentials') unless auth_result
 
-        ResponseHandler.json(:ok, { token: auth_result[:token], expires_in: auth_result[:expires_in] })
+        ResponseHandler.json(:ok, auth_result.slice(:token, :expires_in))
       end
     end
   end

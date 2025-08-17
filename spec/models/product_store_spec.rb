@@ -83,24 +83,6 @@ RSpec.describe ProductStore do
     end
   end
 
-  describe '#products_count' do
-    context 'when no products exist' do
-      it 'returns 0' do
-        expect(store.products_count).to eq(0)
-      end
-    end
-
-    context 'when products exist' do
-      before do
-        store.instance_variable_get(:@products)[product.id] = product
-      end
-
-      it 'returns the correct count' do
-        expect(store.products_count).to eq(1)
-      end
-    end
-  end
-
   describe 'thread safety' do
     it 'uses Concurrent::Hash for thread-safe operations' do
       products_hash = store.instance_variable_get(:@products)

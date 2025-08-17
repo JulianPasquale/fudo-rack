@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require 'concurrent'
 require 'singleton'
-require_relative 'user'
 
 class UserStore
   include Singleton
@@ -28,17 +26,6 @@ class UserStore
   def users
     @users_by_username.values
   end
-
-  def users_count
-    @users_by_username.size
-  end
-
-  # rubocop:disable Naming/PredicateMethod
-  def authenticate(username, password)
-    user = find_by_username(username)
-    user&.authenticated?(password) || false
-  end
-  # rubocop:enable Naming/PredicateMethod
 
   private
 

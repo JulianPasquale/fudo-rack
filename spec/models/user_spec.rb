@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 RSpec.describe User do
   describe '#initialize' do
     context 'with username and password' do
@@ -31,23 +29,23 @@ RSpec.describe User do
     end
   end
 
-  describe '#authenticate' do
+  describe '#authenticated?' do
     let(:user) { User.new(username: 'testuser', password: 'password123') }
 
     it 'returns true for correct password' do
-      expect(user.authenticate('password123')).to be true
+      expect(user.authenticated?('password123')).to be true
     end
 
     it 'returns false for incorrect password' do
-      expect(user.authenticate('wrongpassword')).to be false
+      expect(user.authenticated?('wrongpassword')).to be false
     end
 
     it 'returns false for nil password' do
-      expect(user.authenticate(nil)).to be false
+      expect(user.authenticated?(nil)).to be false
     end
 
     it 'returns false for empty password' do
-      expect(user.authenticate('')).to be false
+      expect(user.authenticated?('')).to be false
     end
   end
 

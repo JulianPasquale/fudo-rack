@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 RSpec.describe AuthService do
   let(:strategy) { AuthStrategies::JWTAuth.new(secret: 'test_secret') }
   subject { described_class.new(strategy: strategy) }

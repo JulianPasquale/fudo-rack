@@ -17,9 +17,6 @@ class User
     hash_password(password) == @password_hash
   end
 
-  # Backward compatibility for tests
-  alias authenticate authenticated?
-
   def to_h
     {
       id: @id,

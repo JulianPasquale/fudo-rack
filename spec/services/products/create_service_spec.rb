@@ -7,15 +7,13 @@ RSpec.describe Products::CreateService do
     let(:product_name) { 'Test Product' }
 
     it 'returns product id immediately' do
+      allow(SecureRandom).to receive(:uuid).and_return('a-fake-id-for-this-test')
       id = subject.create(product_name)
-      expect(id).to be_a(String)
-      expect(id).not_to be_empty
+      expect(id).to eq('a-fake-id-for-this-test')
     end
 
     it 'does not add product to store immediately' do
-      initial_count = ProductStore.instance.products_count
-      subject.create(product_name)
-      expect(ProductStore.instance.products_count).to eq(initial_count)
+      expect { subject.create(product_name) }.not_to(change { ProductStore.instance.products.count })
     end
 
     context 'with multiple async operations in parallel' do

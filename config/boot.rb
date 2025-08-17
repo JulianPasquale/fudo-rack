@@ -11,8 +11,6 @@ Bundler.require(:default, ENV['RACK_ENV'].to_sym)
 Dotenv.load
 
 # Setup Zeitwerk autoloader
-require 'zeitwerk'
-
 loader = Zeitwerk::Loader.new
 loader.push_dir(File.expand_path('../app', __dir__))
 

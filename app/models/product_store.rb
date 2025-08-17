@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require 'concurrent'
 require 'singleton'
-require_relative 'product'
 
 class ProductStore
   include Singleton
@@ -25,9 +23,5 @@ class ProductStore
 
   def exists?(id)
     @products.key?(id)
-  end
-
-  def products_count
-    @products.size
   end
 end

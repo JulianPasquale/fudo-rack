@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'jwt'
-
 module AuthStrategies
   class JWTAuth < BaseStrategy
     ALGORITHM = 'HS256'
