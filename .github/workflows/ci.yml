@@ -31,6 +31,24 @@ jobs:
     - name: Run RuboCop
       run: bundle exec rubocop
 
+  openapi-validation:
+    name: OpenAPI Validation
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Redocly CLI
+      run: npm install -g @redocly/cli
+
+    - name: Validate OpenAPI spec
+      run: redocly lint openai.yaml
+
   docker:
     name: Docker Build
     runs-on: ubuntu-latest

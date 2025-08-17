@@ -4,6 +4,8 @@ JWT-authenticated REST API for product management built with Rack for Fudo.
 
 For more details around the technical decisions made in this implementation, checkout the [docs.md](./docs.md) file.
 
+OpenAPI spec are hosted in [Github pages](https://julianpasquale.github.io/fudo-rack/).
+
 ## Getting Started
 
 ### Requirements
@@ -72,9 +74,6 @@ curl -X POST http://localhost:3000/api/v1/products \
 
 ### Static Files
 ```bash
-# API info
-curl http://localhost:3000/
-
 # OpenAPI specification
 curl http://localhost:3000/openapi.yaml
 

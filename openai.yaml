@@ -1,0 +1,231 @@
+openapi: 3.0.3
+info:
+  title: Fudo Products API
+  description: A simple REST API for managing products with JWT authentication
+  version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+paths:
+  /api/v1/log_in:
+    post:
+      summary: User authentication
+      description: Authenticate a user and receive a JWT token
+      operationId: loginUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: The username for authentication
+                  example: admin
+                password:
+                  type: string
+                  format: password
+                  description: The password for authentication
+                  example: password
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token for authentication
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  expires_in:
+                    type: integer
+                    description: Token expiration time in seconds
+                    example: 3600
+                required:
+                  - token
+                  - expires_in
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/InvalidCredentials'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+
+  /api/v1/products:
+    get:
+      summary: Get all products
+      description: Retrieve a list of all products
+      operationId: getProducts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                required:
+                  - products
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+
+    post:
+      summary: Create a new product
+      description: Create a new product (asynchronous operation)
+      operationId: createProduct
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  description: The name of the product
+                  minLength: 1
+                  example: "Awesome Widget"
+      responses:
+        '202':
+          description: Product creation started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: Unique identifier for the product
+                    example: "123e4567-e89b-12d3-a456-426614174000"
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Product creation started. It will be available in 5 seconds."
+                  status:
+                    type: string
+                    enum: [pending]
+                    description: Current status of the product creation
+                    example: pending
+                required:
+                  - id
+                  - message
+                  - status
+        '400':
+          $ref: '#/components/responses/BadRequestProductName'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the login endpoint
+
+  responses:
+    BadRequest:
+      description: Bad request - missing username or password
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Missing username or password
+
+    BadRequestProductName:
+      description: Bad request - missing or empty product name
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Missing product name
+
+    InvalidCredentials:
+      description: Unauthorized - invalid credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Invalid credentials
+
+    Unauthorized:
+      description: Unauthorized - missing or invalid token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Unauthorized
+
+    MethodNotAllowed:
+      description: Method not allowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Method not allowed
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the product
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          description: The name of the product
+          example: "Awesome Widget"
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp when the product was created
+          example: "2024-01-15T10:30:00Z"
+      required:
+        - id
+        - name
+        - created_at
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message describing what went wrong
+          example: "Invalid credentials"
+      required:
+        - error
+
