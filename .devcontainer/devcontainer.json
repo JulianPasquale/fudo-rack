@@ -1,10 +1,37 @@
 {
-  "name": "Fudo Rack App",
+  "name": "Fudo Rack Development",
   "build": {
-    "dockerfile": "../Dockerfile"
+    "dockerfile": "../Dockerfile",
+    "context": ".."
   },
-  "features": {},
-  "customizations": {},
+  "containerEnv": {
+    "RACK_ENV": "development",
+    "BUNDLE_WITHOUT": "",
+    "BUNDLE_DEPLOYMENT": "0"
+  },
+  "remoteUser": "app",
+  "workspaceFolder": "/app",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Rack App",
+      "onAutoForward": "notify"
+    }
+  },
   "postCreateCommand": "bundle install",
-  "remoteUser": "root"
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Shopify.ruby-lsp",
+        "bradlc.vscode-tailwindcss",
+        "ms-vscode.vscode-json"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  }
 }
