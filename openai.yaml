@@ -142,6 +142,57 @@ paths:
         '405':
           $ref: '#/components/responses/MethodNotAllowed'
 
+  /openapi.yaml:
+    get:
+      summary: Get OpenAPI specification
+      description: Returns the OpenAPI specification for this API
+      operationId: getOpenApiSpec
+      security: []
+      responses:
+        '200':
+          description: OpenAPI specification retrieved successfully
+          content:
+            application/x-yaml:
+              schema:
+                type: string
+                format: binary
+                description: The OpenAPI specification in YAML format
+            text/yaml:
+              schema:
+                type: string
+                format: binary
+                description: The OpenAPI specification in YAML format
+        '404':
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: File not found
+
+  /AUTHORS:
+    get:
+      summary: Get authors information
+      description: Returns information about the API authors
+      operationId: getAuthors
+      security: []
+      responses:
+        '200':
+          description: Authors information retrieved successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Authors information in plain text format
+        '404':
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: File not found
 components:
   securitySchemes:
     BearerAuth:
