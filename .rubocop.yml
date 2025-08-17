@@ -7,3 +7,14 @@ Style/Documentation:
 
 Metrics/BlockLength:
   Enabled: false
+
+# This is a special case. The App class contains all the routes and middlewares setup.
+# I tried to update it to be compliant with these cops, but it just adds more noise honestly.
+# I like it better this way.
+Metrics/AbcSize:
+  Exclude:
+    - app/app.rb
+
+Metrics/MethodLength:
+  Exclude:
+    - app/app.rb
