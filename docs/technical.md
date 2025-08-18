@@ -37,8 +37,10 @@ The CI process will use Github Actions to run 3 jobs in parallel:
 - Docker: This job build the Dockerfile to make sure it generates a valid Docker image.
 - openapi-validation: Use the `redocly` CLI to validate the openapi spec.
 
-## Extras and improvement
+## Extras and improvements
 Some other ideas or improvements that can be added to this application to improve performance:
 - Add pagination to products endpoint. If the list is too big, pagination is a **must have**
+- Add profiling tools like [rack-mini-profiler](https://github.com/MiniProfiler/rack-mini-profiler)
 - Add a reverse-proxy or external server to handle static files. There is no need to use a thread from the web server to serve static files (sometimes), so that could help to reduce some load.
 - Add a database and background job worker. This has been partially implemented in the branch `database-and-sidekiq`, just to show how we can improve the setup to be more scalable. Having a database will allow to increase the Puma workers count, and also Sidekiq can be scaled separately so if the have heavy load, we can just scale it up.
+- Use I18n to handle messages and strings so it's easy to support multiple languages in the future.
